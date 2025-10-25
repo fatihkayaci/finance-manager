@@ -1,0 +1,51 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background-color: #f5f6fa;
+  overflow: hidden;
+}
+.container {
+  display: flex;
+  height: 100vh;
+  width: 100%;
+  margin: 0 auto;
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  box-sizing: border-box;
+}
+
+.container-left {
+  width: 20%;
+  overflow-y: auto;
+  /* float: left; KALDIR */
+}
+
+.container-right {
+  width: 80%;
+  overflow-y: auto;
+  /* float: right; KALDIR */
+}
+
+.bottom-section {
+  display: flex;
+  gap: 1.5rem;
+  padding: 0 2rem 2rem 2rem;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.table-section {
+  flex: 2;
+  min-width: 0; /* Taşmayı önler */
+}
+
+.chart-section {
+  flex: 1;
+  min-width: 0; /* Taşmayı önler */
+}
