@@ -32,7 +32,7 @@ export default function QuickAddForm({ type = "income", onAdd }: QuickAddFormPro
     console.log('📤 Gönderiliyor:', formData);
 
     try {
-      const response = await fetch(`${API_BASE_URL}/income`, {
+      const response = await fetch(`${API_BASE_URL}/${type}`, {
         method: 'POST',  
         headers: {
           'Content-Type': 'application/json'

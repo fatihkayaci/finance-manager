@@ -26,7 +26,6 @@ function Transaction({type = "income"}: TransactionProps) {
     setTransactions([newIncome, ...transactions]);
   };
   useEffect(() => {
-    console.log('📍 Income sayfası yüklendi, API çağrısı yapılıyor...');
     fetch(`${API_BASE_URL}/${type}`, {
       method: 'GET',
       headers: {
@@ -34,17 +33,15 @@ function Transaction({type = "income"}: TransactionProps) {
       }
     })
       .then(response => {
-        console.log('📡 Response geldi:', response);
         return response.json();
       })
       .then(data => {
-        console.log('✅ Veriler geldi:', data);
         setTransactions(data);
       })
       .catch(error => {
         console.error('❌ Hata:', error);
       });
-  }, []);
+  }, [type]);
 
     const deleteIncome = (id: number) => {
     setTransactions(transactions.filter(Transaction => Transaction.id !== id));
@@ -58,9 +55,10 @@ function Transaction({type = "income"}: TransactionProps) {
       
       <div className="bottom-section">
         <div className="table-section">
-          <TransactionList 
+          <TransactionList
             data={transactions}
             onDelete={deleteIncome}
+            type={type}
           />
         </div>
         <div className="chart-section">

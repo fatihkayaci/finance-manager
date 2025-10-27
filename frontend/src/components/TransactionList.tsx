@@ -13,14 +13,15 @@ interface IncomeData {
 interface TransactionListProps {
   data: IncomeData[];
   onDelete: (id: number) => void;
+  type: "income" | "expense";
 }
 
-export default function TransactionList({ data, onDelete }: TransactionListProps) {
+export default function TransactionList({ data, onDelete, type }: TransactionListProps) {
 
   const handleDelete = async (id: number) => {
     console.log('📤 siliniyor:', id);
     try {
-      const response = await fetch(`${API_BASE_URL}/income/${id}`, {
+      const response = await fetch(`${API_BASE_URL}/${type}/${id}`, {
         method: 'DELETE',
       });
       console.log(response);
@@ -39,7 +40,7 @@ export default function TransactionList({ data, onDelete }: TransactionListProps
       <div className="table-header">
         <div className="table-title-section">
           <span className="table-icon">📋</span>
-          <h3 className="table-title">Gelir Listesi</h3>
+          <h3 className="table-title">{type === "income"? "Gelir": "Gider"} Listesi</h3>
         </div>
 
         <div className="filter-section">

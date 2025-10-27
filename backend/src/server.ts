@@ -238,11 +238,20 @@ app.get('/api/income/summary', async (req, res) => {
 });
 // ----- gider için işlemler -----
 app.get('/api/expense', async (req, res) => {
-  const expense = await prisma.transaction.findMany({
+  const expenses = await prisma.transaction.findMany({
     where: { type: 'expense' },
     orderBy: { date: 'desc' }
   });
-  res.json(expense);
+  const formatted = expenses.map(expense => ({
+    ...expense,
+    date: expense.date.toLocaleDateString('tr-TR'),
+    time: expense.date.toLocaleTimeString('tr-TR', { 
+      hour: '2-digit', 
+      minute: '2-digit' 
+    })
+  }));
+  
+  res.json(formatted);
 });
 app.post('/api/expense', async (req, res) => {
   try {

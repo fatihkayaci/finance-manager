@@ -12,7 +12,6 @@ export default function StatsContainer({type} : StatContainerProps) {
   const [weekData, setWeekData] = useState(null);
   const [monthData, setMonthData] = useState(null);
   useEffect(() => {
-    console.log('📍 Income sayfası yüklendi, API çağrısı yapılıyor...');
     fetch(`${API_BASE_URL}/income/summary?period=today`, {
       method: 'GET',
       headers: {
@@ -20,11 +19,9 @@ export default function StatsContainer({type} : StatContainerProps) {
       }
     })
       .then(response => {
-        console.log('📡 Response geldi:', response);
         return response.json();
       })
       .then(data => {
-        console.log('✅ Veriler geldi:', data);
         setTodayData(data);
       })
       .catch(error => {
@@ -38,11 +35,9 @@ export default function StatsContainer({type} : StatContainerProps) {
         }
       })
         .then(response => {
-          console.log('📡 Response geldi:', response);
           return response.json();
         })
         .then(data => {
-          console.log('✅ Veriler geldi:', data);
           setWeekData(data);
         })
         .catch(error => {
@@ -56,11 +51,9 @@ export default function StatsContainer({type} : StatContainerProps) {
         }
       })
         .then(response => {
-          console.log('📡 Response geldi:', response);
           return response.json();
         })
         .then(data => {
-          console.log('✅ Veriler geldi:', data);
           setMonthData(data);
         })
         .catch(error => {
