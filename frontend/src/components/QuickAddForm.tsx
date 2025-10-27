@@ -6,6 +6,7 @@ const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 interface TransactionType {
   id: number;
   date: string;
+  createdAt: string;
   time?: string;
   description: string;
   category: string;
@@ -23,7 +24,7 @@ export default function QuickAddForm({ type = "income", onAdd }: QuickAddFormPro
     amount: '',
     category: 'Restoran',
     description: '',
-    date: new Date().toISOString().split('T')[0]
+    date: new Date().toISOString()
   });
 
   const handleSubmit = async (e: React.FormEvent) => {

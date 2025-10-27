@@ -73,13 +73,11 @@ app.get('/api/income', async (req, res) => {
       day: 'numeric', 
       month: 'long' 
     }),  // "27 Ekim" (gösterim için)
-    time: income.date.toLocaleTimeString('tr-TR', { 
+    time: income.createdAt.toLocaleTimeString('tr-TR', { 
       hour: '2-digit', 
       minute: '2-digit' 
     })
   }));
-
-  
   res.json(formatted);
 });
 app.post('/api/income', async (req, res) => {
@@ -141,8 +139,12 @@ app.get('/api/expense', async (req, res) => {
   });
   const formatted = expenses.map(expense => ({
     ...expense,
-    date: expense.date.toLocaleDateString('tr-TR'),
-    time: expense.date.toLocaleTimeString('tr-TR', { 
+    dateISO: expense.date.toISOString().split('T')[0],  // "2025-10-27" (düzenleme için)
+    date: expense.date.toLocaleDateString('tr-TR', { 
+      day: 'numeric', 
+      month: 'long' 
+    }), 
+    time: expense.createdAt.toLocaleTimeString('tr-TR', { 
       hour: '2-digit', 
       minute: '2-digit' 
     })

@@ -10,6 +10,7 @@ const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 interface TransactionType {
   id: number;
   date: string;
+  createdAt: string;
   time?: string;
   description: string;
   category: string;
@@ -23,7 +24,24 @@ function Transaction({type = "income"}: TransactionProps) {
 
   const [transactions, setTransactions] = useState<TransactionType[]>([]);
   const handleAddIncome = (newIncome: TransactionType) => {
-    setTransactions([newIncome, ...transactions]);
+
+    const dateObj = new Date(newIncome.date);
+    const createdAtObj = new Date(newIncome.createdAt);
+
+    const formatted = {
+      ...newIncome,
+      dateISO: dateObj.toISOString().split('T')[0],
+      date: dateObj.toLocaleDateString('tr-TR', { 
+        day: 'numeric', 
+        month: 'long' 
+      }),
+      time: createdAtObj.toLocaleTimeString('tr-TR', {  // ← createdAt kullan
+        hour: '2-digit', 
+        minute: '2-digit' 
+      })
+    };
+    
+    setTransactions([formatted, ...transactions]);
   };
   useEffect(() => {
     fetch(`${API_BASE_URL}/${type}`, {

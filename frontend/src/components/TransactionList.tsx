@@ -130,7 +130,6 @@ export default function TransactionList({ data, onDelete, type }: TransactionLis
                 <tr key={transaction.id}>
                   <td>
                     <div className="date-cell">{transaction.date}</div>
-                    <div className="time-cell">{transaction.time || '00:00'}</div>
                   </td>
                   <td className="description-cell">{transaction.description}</td>
                   <td>
