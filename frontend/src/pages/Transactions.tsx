@@ -44,8 +44,8 @@ function Transaction({type = "income"}: TransactionProps) {
   }, [type]);
 
     const deleteIncome = (id: number) => {
-    setTransactions(transactions.filter(Transaction => Transaction.id !== id));
-  };
+        setTransactions(transactions.filter(Transaction => Transaction.id !== id));
+    };
   
   return (
     <>

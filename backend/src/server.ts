@@ -68,12 +68,17 @@ app.get('/api/income', async (req, res) => {
   });
   const formatted = incomes.map(income => ({
     ...income,
-    date: income.date.toLocaleDateString('tr-TR'),
+    dateISO: income.date.toISOString().split('T')[0],  // "2025-10-27" (düzenleme için)
+    date: income.date.toLocaleDateString('tr-TR', { 
+      day: 'numeric', 
+      month: 'long' 
+    }),  // "27 Ekim" (gösterim için)
     time: income.date.toLocaleTimeString('tr-TR', { 
       hour: '2-digit', 
       minute: '2-digit' 
     })
   }));
+
   
   res.json(formatted);
 });
@@ -128,6 +133,76 @@ app.put('/api/income/:id', async (req, res) => {
   }
 });
 
+// ----- gider için işlemler -----
+app.get('/api/expense', async (req, res) => {
+  const expenses = await prisma.transaction.findMany({
+    where: { type: 'expense' },
+    orderBy: { date: 'desc' }
+  });
+  const formatted = expenses.map(expense => ({
+    ...expense,
+    date: expense.date.toLocaleDateString('tr-TR'),
+    time: expense.date.toLocaleTimeString('tr-TR', { 
+      hour: '2-digit', 
+      minute: '2-digit' 
+    })
+  }));
+  
+  res.json(formatted);
+});
+app.post('/api/expense', async (req, res) => {
+  try {
+    const { amount, category, description, date } = req.body;
+    if (!amount || amount <= 0)
+      return res.status(400).json({ error: "Tutar 0'dan büyük olmalı." });
+    const expense = await prisma.transaction.create({
+      data: {
+        type: 'expense',
+        amount,
+        category,
+        description,
+        date: new Date(date)
+      }
+    });
+    res.status(201).json(expense);
+  } catch (error) {
+    console.error('Hata:', error);
+    res.status(500).json({ error: 'Bir hata oluştu.' });
+  }
+
+});
+app.delete('/api/expense/:id', async (req, res) => {
+  try {
+    await prisma.transaction.delete({
+      where: { id: parseInt(req.params.id) }
+    });
+    res.json({ message: 'Gider silindi' });
+  } catch (error) {
+    console.error('Hata:', error);
+    res.status(500).json({ error: 'Gider silinirken hata oluştu' });
+  }
+});
+app.put('/api/expense/:id', async (req, res) => {
+  try {
+    const { amount, category, description, date } = req.body;
+    
+    const expense = await prisma.transaction.update({
+      where: { id: parseInt(req.params.id) },
+      data: {
+        ...(amount && { amount }),
+        ...(category && { category }),
+        ...(description && { description }),
+        ...(date && { date: new Date(date) })
+      }
+    });
+    res.json(expense);
+  } catch (error) {
+    console.error('Hata:', error);
+    res.status(500).json({ error: 'Gider güncellenirken hata oluştu' });
+  }
+});
+
+// ----- Ortak işlemler -----
 app.get('/api/income/summary', async (req, res) => {
   const period = req.query.period as string;
   const type = req.query.type;
@@ -239,75 +314,6 @@ app.get('/api/income/summary', async (req, res) => {
     res.status(500).json({ error: 'Gelir güncellenirken hata oluştu' });
   }
 });
-// ----- gider için işlemler -----
-app.get('/api/expense', async (req, res) => {
-  const expenses = await prisma.transaction.findMany({
-    where: { type: 'expense' },
-    orderBy: { date: 'desc' }
-  });
-  const formatted = expenses.map(expense => ({
-    ...expense,
-    date: expense.date.toLocaleDateString('tr-TR'),
-    time: expense.date.toLocaleTimeString('tr-TR', { 
-      hour: '2-digit', 
-      minute: '2-digit' 
-    })
-  }));
-  
-  res.json(formatted);
-});
-app.post('/api/expense', async (req, res) => {
-  try {
-    const { amount, category, description, date } = req.body;
-    if (!amount || amount <= 0)
-      return res.status(400).json({ error: "Tutar 0'dan büyük olmalı." });
-    const expense = await prisma.transaction.create({
-      data: {
-        type: 'expense',
-        amount,
-        category,
-        description,
-        date: new Date(date)
-      }
-    });
-    res.status(201).json(expense);
-  } catch (error) {
-    console.error('Hata:', error);
-    res.status(500).json({ error: 'Bir hata oluştu.' });
-  }
-
-});
-app.delete('/api/expense/:id', async (req, res) => {
-  try {
-    await prisma.transaction.delete({
-      where: { id: parseInt(req.params.id) }
-    });
-    res.json({ message: 'Gider silindi' });
-  } catch (error) {
-    console.error('Hata:', error);
-    res.status(500).json({ error: 'Gider silinirken hata oluştu' });
-  }
-});
-app.put('/api/expense/:id', async (req, res) => {
-  try {
-    const { amount, category, description, date } = req.body;
-    
-    const expense = await prisma.transaction.update({
-      where: { id: parseInt(req.params.id) },
-      data: {
-        ...(amount && { amount }),
-        ...(category && { category }),
-        ...(description && { description }),
-        ...(date && { date: new Date(date) })
-      }
-    });
-    res.json(expense);
-  } catch (error) {
-    console.error('Hata:', error);
-    res.status(500).json({ error: 'Gider güncellenirken hata oluştu' });
-  }
-});
-
 
 app.listen(PORT, () => {
   console.log(`🚀 Server çalışıyor: http://localhost:${PORT}`);
