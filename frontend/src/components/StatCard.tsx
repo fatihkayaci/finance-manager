@@ -1,49 +1,40 @@
 import './StatCard.css'
 
-type StatCardTime = "bugun" | "hafta" | "ay";
-
 interface StatCardProps {
-  type?: "gelir" | "gider";
-  period?: StatCardTime;
-  amount: number;
+  data: {
+    current: number;
+    change: number | null;
+    period: {
+      start: string;
+      end: string;
+    }
+  } | null;  // ← null olabilir (henüz yüklenmemiş)
 }
-
-export default function StatCard({ 
-  type = "gelir", 
-  period = "bugun",
-  amount
-}: StatCardProps) {
-  
-const periods = {
-  bugun: { title: "Bugünkü", date: "27 Eylül 2025", change: "+12.5%" },
-  hafta: { title: "Bu Haftaki", date: "23-29 Eylül", change: "+8.2%" },
-  ay: { title: "Bu Ayki", date: "Eylül 2025", change: "+15.3%" }
-};
-
-const data = periods[period];
-
+export default function StatCard({ data }: StatCardProps) {
+  if (!data) {
+    return <div className="stat-card">Yükleniyor...</div>
+  }
   return (
-    <div 
-      className="stat-card" 
-      style={type === "gelir" 
-        ? { borderLeft: "4px solid #22c55e" } 
-        : { borderLeft: "4px solid #ef4444" }
-      }
-    >
+    <div className="stat-card">
+      {/* // style={type === "gelir" 
+      //   ? { borderLeft: "4px solid #22c55e" } 
+      //   : { borderLeft: "4px solid #ef4444" }
+      // } */}
       <div className="stat-header">
         <span className="stat-title">
-          {data.title} {type === "gelir" ? "Gelir" : "Gider"}
+          Gelir
+          {/* {data.title} {type === "gelir" ? "Gelir" : "Gider"} */}
         </span>
-        <span className="stat-date">{data.date}</span>
+        <span className="stat-date">{data?.period.start === data?.period.end ? data?.period.start : `${data?.period.start} - ${data?.period.end}`}</span>
       </div>
       
       <h2 className="stat-amount">
-        ₺{amount.toLocaleString('tr-TR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+        ₺{data?.current}
       </h2>
       
       <div className="stat-change">
         <span className="stat-icon">✓</span>
-        <span>{data.change} önceki güne göre</span>
+        <span>{data?.change}% önceki güne göre</span>
       </div>
     </div>
   );

@@ -3,21 +3,22 @@ import './QuickAddForm.css';
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
-interface IncomeType {
+interface TransactionType {
   id: number;
   date: string;
   time?: string;
   description: string;
   category: string;
   amount: number;
+  type: string;
 }
 
 interface QuickAddFormProps {
-  type?: "gelir" | "gider";
-  onAdd: (income: IncomeType) => void;
+  type?: "income" | "expense";
+  onAdd: (income: TransactionType) => void;
 }
 
-export default function QuickAddForm({ type = "gelir", onAdd }: QuickAddFormProps) {
+export default function QuickAddForm({ type = "income", onAdd }: QuickAddFormProps) {
   const [formData, setFormData] = useState({
     amount: '',
     category: 'Restoran',
@@ -127,7 +128,7 @@ export default function QuickAddForm({ type = "gelir", onAdd }: QuickAddFormProp
           <button 
             type="submit"
             className="btn-submit" 
-            style={type === "gelir" 
+            style={type === "income" 
               ? { backgroundColor: "#22c55e" } 
               : { backgroundColor: "#ef4444" }
             }

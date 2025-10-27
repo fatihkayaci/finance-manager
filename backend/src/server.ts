@@ -62,11 +62,20 @@ app.delete('/api/transactions/:id', async (req, res) => {
 
 // ----- gelir için işlemler -----
 app.get('/api/income', async (req, res) => {
-  const income = await prisma.transaction.findMany({
+  const incomes = await prisma.transaction.findMany({
     where: { type: 'income' },
     orderBy: { date: 'desc' }
   });
-  res.json(income);
+  const formatted = incomes.map(income => ({
+    ...income,
+    date: income.date.toLocaleDateString('tr-TR'),
+    time: income.date.toLocaleTimeString('tr-TR', { 
+      hour: '2-digit', 
+      minute: '2-digit' 
+    })
+  }));
+  
+  res.json(formatted);
 });
 app.post('/api/income', async (req, res) => {
   try {
@@ -119,6 +128,114 @@ app.put('/api/income/:id', async (req, res) => {
   }
 });
 
+app.get('/api/income/summary', async (req, res) => {
+  const period = req.query.period;
+
+  let current_start;
+  let current_finish;
+  let previous_start;
+  let previous_finish;
+  if (period == "today") {
+    // BUGÜN
+    current_start = new Date();
+    current_start.setHours(0, 0, 0, 0);
+    
+    current_finish = new Date();
+    current_finish.setHours(23, 59, 59, 999);
+    
+    // DÜN (yeni değişkenler!)
+    previous_start = new Date();
+    previous_start.setDate(previous_start.getDate() - 1);
+    previous_start.setHours(0, 0, 0, 0);
+    
+    previous_finish = new Date();
+    previous_finish.setDate(previous_finish.getDate() - 1);
+    previous_finish.setHours(23, 59, 59, 999);
+
+  }else if (period == "week") {
+    current_start = new Date();
+    current_start.setDate(current_start.getDate() - 6);
+    current_start.setHours(0, 0, 0, 0);
+
+    current_finish = new Date()
+    current_finish.setHours(23, 59, 59, 999);
+
+    // geçen hafta
+    previous_start = new Date();
+    previous_start.setDate(previous_start.getDate() - 13);
+    previous_start.setHours(0, 0, 0, 0);
+    
+    previous_finish = new Date();
+    previous_finish.setDate(previous_finish.getDate() - 6);
+    previous_finish.setHours(23, 59, 59, 999);
+
+  }else if (period == "month") {
+    current_start = new Date();
+    current_start.setDate(1);
+    current_start.setHours(0, 0, 0, 0);
+    
+    current_finish = new Date();
+    current_finish.setHours(23, 59, 59, 999);
+    
+    previous_start = new Date();
+    previous_start.setMonth(previous_start.getMonth() - 1);
+    previous_start.setDate(1); 
+    previous_start.setHours(0, 0, 0, 0);
+    
+    previous_finish = new Date();
+    previous_finish.setMonth(previous_finish.getMonth() - 1);
+    // setDate(0) yerine:
+    const lastDayOfMonth = new Date(
+      previous_finish.getFullYear(), 
+      previous_finish.getMonth() + 1, 
+      0
+    ).getDate();
+    previous_finish.setDate(lastDayOfMonth);
+    previous_finish.setHours(23, 59, 59, 999);
+  }else{
+    return res.status(500);
+  }
+  console.log('Geçen ay:', previous_start, 'ile', previous_finish);
+
+  try {
+    //current
+    const current_income = await prisma.transaction.aggregate({
+      where: {
+        type: 'income',
+        date: {gte: current_start, lte: current_finish}
+      },
+      _sum: {amount: true}
+    });
+    const previous_income = await prisma.transaction.aggregate({
+      where: { 
+        type: 'income',
+        date: { gte: previous_start, lte: previous_finish }
+      },
+      _sum: { amount: true }
+    });
+
+    const currentTotal = current_income._sum.amount || 0;
+    const previousTotal = previous_income._sum.amount || 0;
+    const percentage = previousTotal === 0 ? null : parseFloat((((currentTotal - previousTotal) / previousTotal) * 100).toFixed(2));
+    res.json({
+      current: currentTotal,
+      change: percentage,
+      period: {
+        "start": current_start.toLocaleDateString('tr-TR', { 
+            day: 'numeric', 
+            month: 'long' 
+          }),
+        "end": current_finish.toLocaleDateString('tr-TR', { 
+            day: 'numeric', 
+            month: 'long' 
+          }),
+      }
+    });
+  } catch (error) {
+    console.error('Hata:', error);
+    res.status(500).json({ error: 'Gelir güncellenirken hata oluştu' });
+  }
+});
 // ----- gider için işlemler -----
 app.get('/api/expense', async (req, res) => {
   const expense = await prisma.transaction.findMany({

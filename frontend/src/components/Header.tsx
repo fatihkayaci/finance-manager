@@ -1,16 +1,16 @@
 import './Header.css'
-type HeaderType = "gelir" | "gider";
+type HeaderType = "income" | "expense";
 
-export default function Header({type = "gelir"} : {type?: HeaderType}) {
+export default function Header({type = "income"} : {type?: HeaderType}) {
   const config = {
-    gelir: {
+    income: {
       title: "Gelirler",
       icon: "💰",
       buttonText: "Gelir Yönetimi",
       addButtonText: "Yeni Gelir Ekle",
       color: "#22c55e"
     },
-    gider: {
+    expense: {
       title: "Giderler",
       icon: "💸",
       buttonText: "Gider Yönetimi",

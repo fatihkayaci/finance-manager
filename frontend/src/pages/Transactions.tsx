@@ -7,7 +7,7 @@ import CategoryDistribution from '../components/CategoryDistribution';
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
-interface IncomeType {
+interface TransactionType {
   id: number;
   date: string;
   time?: string;
@@ -15,15 +15,19 @@ interface IncomeType {
   category: string;
   amount: number;
 }
+interface TransactionProps {
+  // Component prop'u
+  type: "income" | "expense";
+}
+function Transaction({type="income"}: TransactionProps) {
 
-function Income() {
-  const [incomes, setIncomes] = useState<IncomeType[]>([]);
-  const handleAddIncome = (newIncome: IncomeType) => {
-    setIncomes([newIncome, ...incomes]); // Listeye ekle
+  const [transactions, setTransactions] = useState<TransactionType[]>([]);
+  const handleAddIncome = (newIncome: TransactionType) => {
+    setTransactions([newIncome, ...transactions]);
   };
   useEffect(() => {
     console.log('📍 Income sayfası yüklendi, API çağrısı yapılıyor...');
-    fetch(`${API_BASE_URL}/income`, {
+    fetch(`${API_BASE_URL}/${type}`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json'
@@ -35,36 +39,36 @@ function Income() {
       })
       .then(data => {
         console.log('✅ Veriler geldi:', data);
-        setIncomes(data);
+        setTransactions(data);
       })
       .catch(error => {
         console.error('❌ Hata:', error);
       });
   }, []);
 
-  const deleteIncome = (id: number) => {
-    setIncomes(incomes.filter(income => income.id !== id));
+    const deleteIncome = (id: number) => {
+    setTransactions(transactions.filter(Transaction => Transaction.id !== id));
   };
   
   return (
     <>
-      <Header type="gelir" />
+      <Header type={type}/>
       <StatCardContainer />
-      <QuickAddForm type="gelir" onAdd={handleAddIncome}/>
+      <QuickAddForm type={type} onAdd={handleAddIncome}/>
       
       <div className="bottom-section">
         <div className="table-section">
           <TransactionList 
-            data={incomes}
+            data={transactions}
             onDelete={deleteIncome}
           />
         </div>
         <div className="chart-section">
-          <CategoryDistribution data={incomes} />
+          <CategoryDistribution data={transactions} />
         </div>
       </div>
     </>
   );
 }
 
-export default Income;
+export default Transaction;
