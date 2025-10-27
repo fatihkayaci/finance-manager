@@ -24,7 +24,7 @@ export default function QuickAddForm({ type = "income", onAdd }: QuickAddFormPro
     amount: '',
     category: 'Restoran',
     description: '',
-    date: new Date().toISOString()
+    date: new Date().toISOString().split('T')[0]
   });
 
   const handleSubmit = async (e: React.FormEvent) => {
