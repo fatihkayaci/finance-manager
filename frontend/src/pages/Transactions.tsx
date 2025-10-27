@@ -61,10 +61,18 @@ function Transaction({type = "income"}: TransactionProps) {
       });
   }, [type]);
 
-    const deleteIncome = (id: number) => {
-        setTransactions(transactions.filter(Transaction => Transaction.id !== id));
-    };
+  const deleteIncome = (id: number) => {
+      setTransactions(transactions.filter(Transaction => Transaction.id !== id));
+  };
   
+  const handleUpdate = (id: number, updatedData: any) => {
+    // State'te bu ID'li kaydı güncelle
+    setTransactions(
+      transactions.map(t => 
+        t.id === id ? { ...t, ...updatedData } : t
+      )
+    );
+  };
   return (
     <>
       <Header type={type}/>
@@ -76,6 +84,7 @@ function Transaction({type = "income"}: TransactionProps) {
           <TransactionList
             data={transactions}
             onDelete={deleteIncome}
+            onUpdate={handleUpdate}
             type={type}
           />
         </div>

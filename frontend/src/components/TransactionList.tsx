@@ -14,10 +14,11 @@ interface transactionData {
 interface TransactionListProps {
   data: transactionData[];
   onDelete: (id: number) => void;
+  onUpdate: (id: number, updatedData: any) => void;
   type: "income" | "expense";
 }
 
-export default function TransactionList({ data, onDelete, type }: TransactionListProps) {
+export default function TransactionList({ data, onDelete, onUpdate, type }: TransactionListProps) {
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedTransaction, setSelectedTransaction] = useState<transactionData | null>(null);
@@ -55,12 +56,23 @@ export default function TransactionList({ data, onDelete, type }: TransactionLis
       }
       
       console.log('✅ Güncellendi!');
-      
+
+      const dateObj = new Date(updatedData.date);
+
+      const formatted = {
+        ...updatedData,
+        dateISO: dateObj.toISOString().split('T')[0],
+        date: dateObj.toLocaleDateString('tr-TR', { 
+          day: 'numeric', 
+          month: 'long' 
+        })
+      };
+
+      onUpdate(id, formatted);
+
       // Modal'ı kapat
       setIsModalOpen(false);
       
-      // Sayfayı yenile (veya state'i güncelle)
-      window.location.reload();
       
     } catch (error) {
       console.error('❌ Hata:', error);
