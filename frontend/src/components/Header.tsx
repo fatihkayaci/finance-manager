@@ -7,14 +7,14 @@ export default function Header({type = "income"} : {type?: HeaderType}) {
       title: "Gelirler",
       icon: "💰",
       buttonText: "Gelir Yönetimi",
-      addButtonText: "Yeni Gelir Ekle",
+      addButtonText: "+ Yeni Gelir Ekle",
       color: "#22c55e"
     },
     expense: {
       title: "Giderler",
       icon: "💸",
       buttonText: "Gider Yönetimi",
-      addButtonText: "Yeni Gider Ekle",
+      addButtonText: "+ Yeni Gider Ekle",
       color: "#ef4444"
     }
   };
@@ -39,7 +39,7 @@ export default function Header({type = "income"} : {type?: HeaderType}) {
             </button>
             
             <button className="btn-yeni-ekle" style={{ backgroundColor: config[type].color }}>
-              + Yeni {config[type].addButtonText} Ekle
+              {config[type].addButtonText}
             </button>
           </div>
         </div>

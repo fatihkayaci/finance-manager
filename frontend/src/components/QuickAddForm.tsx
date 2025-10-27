@@ -71,7 +71,7 @@ export default function QuickAddForm({ type = "income", onAdd }: QuickAddFormPro
       <div className="quick-add-container">
         <div className="form-header">
           <span className="form-icon">⚡</span>
-          <h3 className="form-title">Hızlı {type} Ekleme</h3>
+          <h3 className="form-title">Hızlı {type === "income"? "Gelir": "Gider"} Ekleme</h3>
         </div>
 
         <form onSubmit={handleSubmit} className="form-grid">
@@ -107,7 +107,7 @@ export default function QuickAddForm({ type = "income", onAdd }: QuickAddFormPro
             <label className="form-label">Açıklama</label>
             <input 
               type="text" 
-              placeholder={`${type} açıklaması...`}
+              placeholder={`${type === "income"? "Gelir": "Gider"} açıklaması...`}
               className="form-input"
               value={formData.description}
               onChange={(e) => setFormData({ ...formData, description: e.target.value })}

@@ -19,7 +19,7 @@ interface TransactionProps {
   // Component prop'u
   type: "income" | "expense";
 }
-function Transaction({type="income"}: TransactionProps) {
+function Transaction({type = "income"}: TransactionProps) {
 
   const [transactions, setTransactions] = useState<TransactionType[]>([]);
   const handleAddIncome = (newIncome: TransactionType) => {
@@ -53,7 +53,7 @@ function Transaction({type="income"}: TransactionProps) {
   return (
     <>
       <Header type={type}/>
-      <StatCardContainer />
+      <StatCardContainer type={type}/>
       <QuickAddForm type={type} onAdd={handleAddIncome}/>
       
       <div className="bottom-section">

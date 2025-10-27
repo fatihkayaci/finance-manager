@@ -1,6 +1,8 @@
 import './StatCard.css'
 
 interface StatCardProps {
+  type: "income" | "expense";
+  period: "güne" | "haftaya" | "aya"
   data: {
     current: number;
     change: number | null;
@@ -10,20 +12,19 @@ interface StatCardProps {
     }
   } | null;  // ← null olabilir (henüz yüklenmemiş)
 }
-export default function StatCard({ data }: StatCardProps) {
+export default function StatCard({ data, type, period }: StatCardProps) {
   if (!data) {
     return <div className="stat-card">Yükleniyor...</div>
   }
   return (
-    <div className="stat-card">
-      {/* // style={type === "gelir" 
-      //   ? { borderLeft: "4px solid #22c55e" } 
-      //   : { borderLeft: "4px solid #ef4444" }
-      // } */}
+    <div className="stat-card" style={type === "income" 
+          ? { borderLeft: "4px solid #22c55e" } 
+          : { borderLeft: "4px solid #ef4444" }
+        }>
+      
       <div className="stat-header">
         <span className="stat-title">
-          Gelir
-          {/* {data.title} {type === "gelir" ? "Gelir" : "Gider"} */}
+          {type === "income"? "Gelir": "Gider"}
         </span>
         <span className="stat-date">{data?.period.start === data?.period.end ? data?.period.start : `${data?.period.start} - ${data?.period.end}`}</span>
       </div>
@@ -34,7 +35,13 @@ export default function StatCard({ data }: StatCardProps) {
       
       <div className="stat-change">
         <span className="stat-icon">✓</span>
-        <span>{data?.change}% önceki güne göre</span>
+        <span style={data?.change !== null && data?.change < 0 
+          ? { color: "#ef4444" }
+          : { color: "#22c55e" }
+        }>
+          {data?.change}
+          % önceki {period} göre
+        </span>
       </div>
     </div>
   );

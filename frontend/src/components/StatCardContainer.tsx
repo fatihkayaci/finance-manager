@@ -3,8 +3,10 @@ import StatCard from './StatCard';
 import { useState, useEffect } from 'react';
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
-
-export default function StatsContainer() {
+interface StatContainerProps{
+  type: "income" | "expense"
+}
+export default function StatsContainer({type} : StatContainerProps) {
 
   const [todayData, setTodayData] = useState(null);
   const [weekData, setWeekData] = useState(null);
@@ -71,12 +73,18 @@ export default function StatsContainer() {
       <div className="stats-container">
         <StatCard 
           data = {todayData}
+          type = {type}
+          period = 'güne'
         />
         <StatCard
           data = {weekData}
+          type = {type}
+          period = 'haftaya'
         />
         <StatCard
           data = {monthData}
+          type = {type}
+          period = 'aya'
         />
       </div>
     </>
