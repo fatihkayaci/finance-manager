@@ -129,8 +129,11 @@ app.put('/api/income/:id', async (req, res) => {
 });
 
 app.get('/api/income/summary', async (req, res) => {
-  const period = req.query.period;
-
+  const period = req.query.period as string;
+  const type = req.query.type;
+  if (typeof type !== 'string') {
+    return res.status(400).json({ error: 'type string olmalı' });
+  }
   let current_start;
   let current_finish;
   let previous_start;
@@ -201,14 +204,14 @@ app.get('/api/income/summary', async (req, res) => {
     //current
     const current_income = await prisma.transaction.aggregate({
       where: {
-        type: 'income',
+        type: type,
         date: {gte: current_start, lte: current_finish}
       },
       _sum: {amount: true}
     });
     const previous_income = await prisma.transaction.aggregate({
       where: { 
-        type: 'income',
+        type: type,
         date: { gte: previous_start, lte: previous_finish }
       },
       _sum: { amount: true }

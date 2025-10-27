@@ -29,15 +29,6 @@ export default function Header({type = "income"} : {type?: HeaderType}) {
           </div>
 
           <div className="header-right">
-            <input 
-              type="text" 
-              placeholder={`${config[type].title} ara... (tutar, açıklama, kategori)`}
-              className="search-input"
-            />
-            <button className="btn-filtrele">
-              🔍 Filtrele
-            </button>
-            
             <button className="btn-yeni-ekle" style={{ backgroundColor: config[type].color }}>
               {config[type].addButtonText}
             </button>

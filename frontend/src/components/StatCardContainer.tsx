@@ -12,7 +12,7 @@ export default function StatsContainer({type} : StatContainerProps) {
   const [weekData, setWeekData] = useState(null);
   const [monthData, setMonthData] = useState(null);
   useEffect(() => {
-    fetch(`${API_BASE_URL}/income/summary?period=today`, {
+    fetch(`${API_BASE_URL}/income/summary?period=today&type=${type}`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json'
@@ -28,7 +28,7 @@ export default function StatsContainer({type} : StatContainerProps) {
         console.error('❌ Hata:', error);
       });
 
-      fetch(`${API_BASE_URL}/income/summary?period=week`, {
+      fetch(`${API_BASE_URL}/income/summary?period=week&type=${type}`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json'
@@ -44,7 +44,7 @@ export default function StatsContainer({type} : StatContainerProps) {
           console.error('❌ Hata:', error);
         });
 
-      fetch(`${API_BASE_URL}/income/summary?period=month`, {
+      fetch(`${API_BASE_URL}/income/summary?period=month&type=${type}`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json'
