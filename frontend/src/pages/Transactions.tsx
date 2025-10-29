@@ -16,15 +16,16 @@ interface TransactionType {
   category: string;
   amount: number;
 }
+
 interface TransactionProps {
-  // Component prop'u
   type: "income" | "expense";
 }
+
 function Transaction({type = "income"}: TransactionProps) {
-
   const [transactions, setTransactions] = useState<TransactionType[]>([]);
-  const handleAddIncome = (newIncome: TransactionType) => {
+  const [refreshKey, setRefreshKey] = useState(0); // ← YENİ: StatCard'ları yenilemek için
 
+  const handleAddIncome = (newIncome: TransactionType) => {
     const dateObj = new Date(newIncome.date);
     const createdAtObj = new Date(newIncome.createdAt);
 
@@ -35,14 +36,16 @@ function Transaction({type = "income"}: TransactionProps) {
         day: 'numeric', 
         month: 'long' 
       }),
-      time: createdAtObj.toLocaleTimeString('tr-TR', {  // ← createdAt kullan
+      time: createdAtObj.toLocaleTimeString('tr-TR', {
         hour: '2-digit', 
         minute: '2-digit' 
       })
     };
     
     setTransactions([formatted, ...transactions]);
+    setRefreshKey(prev => prev + 1); // ← YENİ: StatCard'ları yenile
   };
+
   useEffect(() => {
     fetch(`${API_BASE_URL}/${type}`, {
       method: 'GET',
@@ -62,21 +65,23 @@ function Transaction({type = "income"}: TransactionProps) {
   }, [type]);
 
   const deleteIncome = (id: number) => {
-      setTransactions(transactions.filter(Transaction => Transaction.id !== id));
+    setTransactions(transactions.filter(Transaction => Transaction.id !== id));
+    setRefreshKey(prev => prev + 1); // ← YENİ: Silme işleminden sonra da yenile
   };
   
   const handleUpdate = (id: number, updatedData: any) => {
-    // State'te bu ID'li kaydı güncelle
     setTransactions(
       transactions.map(t => 
         t.id === id ? { ...t, ...updatedData } : t
       )
     );
+    setRefreshKey(prev => prev + 1); // ← YENİ: Güncelleme işleminden sonra da yenile
   };
+
   return (
     <>
       <Header type={type}/>
-      <StatCardContainer type={type}/>
+      <StatCardContainer type={type} refreshTrigger={refreshKey} /> {/* ← YENİ: refreshTrigger prop'u */}
       <QuickAddForm type={type} onAdd={handleAddIncome}/>
       
       <div className="bottom-section">
