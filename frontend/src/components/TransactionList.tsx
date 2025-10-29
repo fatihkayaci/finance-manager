@@ -1,7 +1,9 @@
 import './TransactionList.css';
 import EditModal from './EditModal';
 import {useState} from 'react';
+
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+
 interface transactionData {
   id: number;
   date: string;
@@ -9,6 +11,8 @@ interface transactionData {
   description: string;
   category: string;
   amount: number;
+  paymentMethod?: string;   // ← YENİ
+  commission?: number;      // ← YENİ
 }
 
 interface TransactionListProps {
@@ -19,7 +23,6 @@ interface TransactionListProps {
 }
 
 export default function TransactionList({ data, onDelete, onUpdate, type }: TransactionListProps) {
-
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedTransaction, setSelectedTransaction] = useState<transactionData | null>(null);
 
@@ -35,13 +38,12 @@ export default function TransactionList({ data, onDelete, onUpdate, type }: Tran
       }
       console.log("silindi!");
       onDelete(id);
-
     } catch (error) {
       console.error('❌ Hata:', error);
     }
   }
+
   const handleSave = async (id: number, updatedData: any) => {
-    
     try {
       const response = await fetch(`${API_BASE_URL}/${type}/${id}`, {
         method: 'PUT',
@@ -55,12 +57,13 @@ export default function TransactionList({ data, onDelete, onUpdate, type }: Tran
         throw new Error('API hatası');
       }
       
-      console.log('✅ Güncellendi!');
+      const result = await response.json(); // ← Backend'den dönen güncel veriyi al
+      console.log('✅ Güncellendi:', result);
 
-      const dateObj = new Date(updatedData.date);
+      const dateObj = new Date(result.date);
 
       const formatted = {
-        ...updatedData,
+        ...result, // ← Backend'den gelen veriyi kullan (commission dahil)
         dateISO: dateObj.toISOString().split('T')[0],
         date: dateObj.toLocaleDateString('tr-TR', { 
           day: 'numeric', 
@@ -69,20 +72,19 @@ export default function TransactionList({ data, onDelete, onUpdate, type }: Tran
       };
 
       onUpdate(id, formatted);
-
-      // Modal'ı kapat
       setIsModalOpen(false);
-      
       
     } catch (error) {
       console.error('❌ Hata:', error);
     }
   }
+
   const handleUpdate = async (id: number) => {
     const transaction = data.find(t => t.id === id);
     setSelectedTransaction(transaction || null);
     setIsModalOpen(true);
   }
+
   return (
     <>
       <div className="table-container">
@@ -132,6 +134,7 @@ export default function TransactionList({ data, onDelete, onUpdate, type }: Tran
               <th>Tarih</th>
               <th>Açıklama</th>
               <th>Kategori</th>
+              <th>Ödeme</th> {/* ← YENİ KOLON */}
               <th>Tutar</th>
               <th>İşlemler</th>
             </tr>
@@ -149,11 +152,40 @@ export default function TransactionList({ data, onDelete, onUpdate, type }: Tran
                       {transaction.category}
                     </span>
                   </td>
-                  <td className="amount-cell">₺{transaction.amount.toFixed(2)}</td>
+                  
+                  {/* ✨ YENİ: Ödeme Yöntemi */}
+                  <td>
+                    <span className="payment-badge">
+                      {transaction.paymentMethod === 'Kredi Kartı' && '💳'}
+                      {transaction.paymentMethod === 'Nakit' && '💵'}
+                      {transaction.paymentMethod === 'Banka Transferi' && '🏦'}
+                      {' '}{transaction.paymentMethod || 'Nakit'}
+                    </span>
+                  </td>
+
+                  {/* ✨ YENİ: Net Tutar + Komisyon Bilgisi */}
+                  <td className="amount-cell">
+                    <div>₺{transaction.amount.toFixed(2)}</div>
+                    {transaction.commission && transaction.commission > 0 && (
+                      <div className="commission-info">
+                        <small>
+                          (Brüt: ₺{(transaction.amount + transaction.commission).toFixed(2)})
+                        </small>
+                        <br />
+                        <small className="commission-text">
+                          Komisyon: -₺{transaction.commission.toFixed(2)}
+                        </small>
+                      </div>
+                    )}
+                  </td>
+
                   <td className="actions-cell">
                     <button 
-                    className="btn-action btn-edit"
-                    onClick={() => handleUpdate(transaction.id)}>✏️ Düzenle</button>
+                      className="btn-action btn-edit"
+                      onClick={() => handleUpdate(transaction.id)}
+                    >
+                      ✏️ Düzenle
+                    </button>
                     <button 
                       className="btn-action btn-delete"
                       onClick={() => handleDelete(transaction.id)}
@@ -165,7 +197,8 @@ export default function TransactionList({ data, onDelete, onUpdate, type }: Tran
               ))
             ) : (
               <tr>
-                <td colSpan={5} style={{ textAlign: 'center', padding: '20px' }}>
+                <td colSpan={6} style={{ textAlign: 'center', padding: '20px' }}>
+                  {/* ↑ 5'ten 6'ya değiştirdik (yeni kolon eklendi) */}
                   Henüz gelir kaydı yok
                 </td>
               </tr>
@@ -188,6 +221,7 @@ export default function TransactionList({ data, onDelete, onUpdate, type }: Tran
           </div>
         </div>
       </div>
+
       <EditModal 
         isOpen={isModalOpen}
         data={selectedTransaction}

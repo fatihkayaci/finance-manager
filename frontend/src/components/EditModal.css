@@ -113,3 +113,24 @@
 .btn-save:hover {
   background: #4f46e5;
 }
+
+
+
+.info-box {
+  background-color: #f0f9ff;
+  border: 1px solid #38bdf8;
+  border-radius: 8px;
+  padding: 12px;
+  margin-bottom: 16px;
+}
+
+.info-box p {
+  margin: 4px 0;
+  color: #0369a1;
+  font-size: 14px;
+}
+
+.info-box strong {
+  color: #0c4a6e;
+  font-weight: 600;
+}

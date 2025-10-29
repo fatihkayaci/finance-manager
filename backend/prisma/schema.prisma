@@ -14,12 +14,14 @@ datasource db {
 }
 
 model Transaction {
-  id          Int      @id @default(autoincrement())
-  type        String   // "income" veya "expense"
-  amount      Float
-  category    String
-  description String?  // ? = opsiyonel (null olabilir)
-  date        DateTime
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id            Int      @id @default(autoincrement())
+  type          String
+  amount        Float
+  category      String
+  description   String?
+  date          DateTime
+  paymentMethod String?
+  commission    Float?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
 }

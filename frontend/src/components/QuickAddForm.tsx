@@ -12,6 +12,7 @@ interface TransactionType {
   category: string;
   amount: number;
   type: string;
+  paymentMethod?: string; // ← YENİ
 }
 
 interface QuickAddFormProps {
@@ -24,11 +25,12 @@ export default function QuickAddForm({ type = "income", onAdd }: QuickAddFormPro
     amount: '',
     category: 'Restoran',
     description: '',
-    date: new Date().toISOString().split('T')[0]
+    date: new Date().toISOString().split('T')[0],
+    paymentMethod: 'Nakit' // ← YENİ: Varsayılan değer
   });
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault(); // Sayfanın yenilenmesini engelle
+    e.preventDefault();
 
     console.log('📤 Gönderiliyor:', formData);
 
@@ -42,7 +44,8 @@ export default function QuickAddForm({ type = "income", onAdd }: QuickAddFormPro
           amount: parseFloat(formData.amount),
           category: formData.category,
           description: formData.description,
-          date: formData.date
+          date: formData.date,
+          paymentMethod: formData.paymentMethod // ← YENİ
         })
       });
 
@@ -58,7 +61,8 @@ export default function QuickAddForm({ type = "income", onAdd }: QuickAddFormPro
         amount: '',
         category: 'Restoran',
         description: '',
-        date: new Date().toISOString().split('T')[0]
+        date: new Date().toISOString().split('T')[0],
+        paymentMethod: 'Nakit' // ← YENİ: Reset değeri
       });
       onAdd(createdIncome);
 
@@ -67,8 +71,8 @@ export default function QuickAddForm({ type = "income", onAdd }: QuickAddFormPro
     }
   };
   
-    return (
-     <>
+  return (
+    <>
       <div className="quick-add-container">
         <div className="form-header">
           <span className="form-icon">⚡</span>
@@ -104,6 +108,20 @@ export default function QuickAddForm({ type = "income", onAdd }: QuickAddFormPro
             </select>
           </div>
 
+          {/* ✨ YENİ: Ödeme Yöntemi */}
+          <div className="form-group">
+            <label className="form-label">Ödeme Yöntemi</label>
+            <select 
+              className="form-select"
+              value={formData.paymentMethod}
+              onChange={(e) => setFormData({ ...formData, paymentMethod: e.target.value })}
+            >
+              <option value="Nakit">💵 Nakit</option>
+              <option value="Kredi Kartı">💳 Kredi Kartı</option>
+              <option value="Banka Transferi">🏦 Banka Transferi</option>
+            </select>
+          </div>
+
           <div className="form-group">
             <label className="form-label">Açıklama</label>
             <input 
@@ -112,7 +130,6 @@ export default function QuickAddForm({ type = "income", onAdd }: QuickAddFormPro
               className="form-input"
               value={formData.description}
               onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-              required
             />
           </div>
 

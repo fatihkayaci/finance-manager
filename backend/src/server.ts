@@ -82,18 +82,32 @@ app.get('/api/income', async (req, res) => {
 });
 app.post('/api/income', async (req, res) => {
   try {
-    const { amount, category, description, date } = req.body;
+    const { amount, category, description, date, paymentMethod } = req.body;
+    
     if (!amount || amount <= 0)
       return res.status(400).json({ error: "Tutar 0'dan büyük olmalı." });
+    
+    // 💳 Kredi Kartı ise %20 komisyon kes
+    let finalAmount = amount;
+    let commission = 0;
+    
+    if (paymentMethod === 'Kredi Kartı') {
+      commission = amount * 0.2;      // Kesilen tutar: 100 * 0.2 = 20₺
+      finalAmount = amount - commission; // Net tutar: 100 - 20 = 80₺
+    }
+    
     const income = await prisma.transaction.create({
       data: {
         type: 'income',
-        amount,
+        amount: finalAmount,
         category,
         description,
-        date: new Date(date)
+        date: new Date(date),
+        paymentMethod,
+        commission
       }
     });
+    
     res.status(201).json(income);
   } catch (error) {
     console.error('Hata:', error);
@@ -113,17 +127,29 @@ app.delete('/api/income/:id', async (req, res) => {
 });
 app.put('/api/income/:id', async (req, res) => {
   try {
-    const { amount, category, description, date } = req.body;
+    const { amount, category, description, date, paymentMethod } = req.body;
+    
+    // 💳 Eğer paymentMethod değiştiriliyorsa komisyon yeniden hesapla
+    let finalAmount = amount;
+    let commission = 0;
+    
+    if (paymentMethod === 'Kredi Kartı') {
+      commission = amount * 0.2;           // 100 * 0.2 = 20₺
+      finalAmount = amount - commission;    // 100 - 20 = 80₺
+    }
     
     const income = await prisma.transaction.update({
       where: { id: parseInt(req.params.id) },
       data: {
-        ...(amount && { amount }),
+        ...(finalAmount && { amount: finalAmount }), // ← Kesilmiş tutar
         ...(category && { category }),
         ...(description && { description }),
-        ...(date && { date: new Date(date) })
+        ...(date && { date: new Date(date) }),
+        ...(paymentMethod && { paymentMethod }),
+        ...(commission !== undefined && { commission }) // ← Komisyon
       }
     });
+    
     res.json(income);
   } catch (error) {
     console.error('Hata:', error);
