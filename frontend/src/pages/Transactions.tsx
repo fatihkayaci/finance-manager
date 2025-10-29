@@ -23,7 +23,7 @@ interface TransactionProps {
 
 function Transaction({type = "income"}: TransactionProps) {
   const [transactions, setTransactions] = useState<TransactionType[]>([]);
-  const [refreshKey, setRefreshKey] = useState(0); // ← YENİ: StatCard'ları yenilemek için
+  const [refreshKey, setRefreshKey] = useState(0);
 
   const handleAddIncome = (newIncome: TransactionType) => {
     const dateObj = new Date(newIncome.date);
