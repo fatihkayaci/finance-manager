@@ -1,0 +1,23 @@
+/* StatsContainer.css */
+
+.stats-container {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr); /* 4 sütun */
+  gap: 15px;
+  padding: 0 30px;
+  margin-bottom: 30px;
+}
+
+/* Responsive */
+@media (max-width: 1400px) {
+  .stats-container {
+    grid-template-columns: repeat(2, 1fr); /* 2'şer 2'şer */
+  }
+}
+
+@media (max-width: 768px) {
+  .stats-container {
+    grid-template-columns: 1fr; /* Tek sütun */
+    padding: 0 15px;
+  }
+}
