@@ -1,5 +1,12 @@
+
+import ReportsHeader from '../components/ReportsHeader';
 function Reports() {
-  return <h1>Reports</h1>
+  return (
+    <>
+      <ReportsHeader/>
+    </>
+  );
+
 }
 
 export default Reports;
