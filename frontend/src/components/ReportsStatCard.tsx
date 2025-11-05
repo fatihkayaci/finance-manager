@@ -3,7 +3,7 @@ import './ReportsStatCard.css';
 interface ReportsStatCard {
   icon: string;
   label: string;
-  value: string;
+  value: number;
   color?: 'green' | 'red' | 'blue' | 'orange' | 'purple';
 }
 export default function ReportsStatCard({ icon, label, value, color = 'purple' }: ReportsStatCard) {
