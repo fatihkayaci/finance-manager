@@ -21,6 +21,7 @@ app.get('/', (req, res) => {
 // ----- işlemler için işlemler -----
 app.get('/api/transactions', async (req, res) => {
   const transactions = await prisma.transaction.findMany({
+    include: {category: true},
     orderBy: { date: 'desc' }
   });
   const formatted = transactions.map(transaction => ({
@@ -191,7 +192,7 @@ app.get('/api/expense', async (req, res) => {
 });
 app.post('/api/expense', async (req, res) => {
   try {
-    const { amount, categoryId, description, date } = req.body;
+    const { amount, categoryId, description, date, paymentMethod } = req.body;
     if (!amount || amount <= 0)
       return res.status(400).json({ error: "Tutar 0'dan büyük olmalı." });
     const expense = await prisma.transaction.create({
@@ -200,7 +201,8 @@ app.post('/api/expense', async (req, res) => {
         amount,
         categoryId,
         description,
-        date: new Date(date)
+        date: new Date(date),
+        paymentMethod
       }
     });
     res.status(201).json(expense);

@@ -3,13 +3,20 @@ import './TransactionTable.css';
 interface Transaction {
   id: number;
   date: string;
-  category: string;
+  category: Category;
   categoryIcon: string;
   description: string;
   paymentMethod: string;
   paymentIcon: string;
   amount: number;
   type: 'income' | 'expense';
+}
+interface Category {
+  id: number;
+  name: string;
+  icon: string;
+  type?: string;
+  color: string;
 }
 interface Props{
   data: Transaction[];
@@ -52,7 +59,7 @@ export default function TransactionTable({data} : Props) {
                 <td>{transaction.date}</td>
                 <td>
                   <span className="category-cell">
-                    {transaction.categoryIcon} {transaction.category}
+                    {transaction.category?.icon} {transaction.category?.name}
                   </span>
                 </td>
                 <td>{transaction.description}</td>
