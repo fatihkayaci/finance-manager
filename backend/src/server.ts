@@ -23,7 +23,15 @@ app.get('/api/transactions', async (req, res) => {
   const transactions = await prisma.transaction.findMany({
     orderBy: { date: 'desc' }
   });
-  res.json(transactions);
+  const formatted = transactions.map(transaction => ({
+    ...transaction,
+    date: transaction.date.toLocaleDateString('tr-TR', { 
+      day: '2-digit',
+      month: 'long',
+      year: 'numeric'
+    }),
+  }));
+  res.json(formatted);
 });
 app.get('/api/transactions/:id', async (req, res) => {
   const transaction = await prisma.transaction.findUnique({
@@ -68,15 +76,12 @@ app.get('/api/income', async (req, res) => {
   });
   const formatted = incomes.map(income => ({
     ...income,
-    dateISO: income.date.toISOString().split('T')[0],  // "2025-10-27" (düzenleme için)
+    dateISO: income.date.toISOString().split('T')[0],
     date: income.date.toLocaleDateString('tr-TR', { 
       day: 'numeric', 
-      month: 'long' 
-    }),  // "27 Ekim" (gösterim için)
-    time: income.createdAt.toLocaleTimeString('tr-TR', { 
-      hour: '2-digit', 
-      minute: '2-digit' 
-    })
+      month: 'long',
+      year: 'numeric'
+    }),
   }));
   res.json(formatted);
 });
