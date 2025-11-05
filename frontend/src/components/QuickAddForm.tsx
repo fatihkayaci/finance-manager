@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import './QuickAddForm.css';
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
@@ -12,21 +12,29 @@ interface TransactionType {
   category: string;
   amount: number;
   type: string;
-  paymentMethod?: string; // ← YENİ
+  paymentMethod?: string;
 }
-
+interface Category {
+  id: number;
+  name: string;
+  icon: string;
+  type?: string;
+  color: string;
+}
 interface QuickAddFormProps {
   type?: "income" | "expense";
   onAdd: (income: TransactionType) => void;
 }
 
 export default function QuickAddForm({ type = "income", onAdd }: QuickAddFormProps) {
+  
+  const [category, setCategory] = useState<Category[]>([]);
   const [formData, setFormData] = useState({
     amount: '',
     category: 'Restoran',
     description: '',
     date: new Date().toISOString().split('T')[0],
-    paymentMethod: 'Nakit' // ← YENİ: Varsayılan değer
+    paymentMethod: 'Nakit'
   });
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -71,6 +79,23 @@ export default function QuickAddForm({ type = "income", onAdd }: QuickAddFormPro
     }
   };
   
+  useEffect(() => {
+      fetch(`${API_BASE_URL}/category/${type}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      })
+      .then(response => {
+        return response.json();
+      })
+      .then(data => {
+        setCategory(data);
+      })
+      .catch(error => {
+        console.error('❌ Hata:', error);
+      });
+    }, [type]);
   return (
     <>
       <div className="quick-add-container">
@@ -101,14 +126,15 @@ export default function QuickAddForm({ type = "income", onAdd }: QuickAddFormPro
               value={formData.category}
               onChange={(e) => setFormData({ ...formData, category: e.target.value })}
             >
-              <option value="Restoran">Restoran Satışları</option>
-              <option value="Online">Online Sipariş</option>
-              <option value="Paket Servis">Paket Servis</option>
-              <option value="Catering">Catering</option>
+              <option value="">Kategori Seçin</option>
+              {category.map(cat => (
+                <option key={cat.id} value={cat.name}>
+                  {cat.icon} {cat.name}
+                </option>
+              ))}
             </select>
           </div>
 
-          {/* ✨ YENİ: Ödeme Yöntemi */}
           <div className="form-group">
             <label className="form-label">Ödeme Yöntemi</label>
             <select 

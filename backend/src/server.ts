@@ -235,6 +235,22 @@ app.put('/api/expense/:id', async (req, res) => {
   }
 });
 
+
+// ----- Kategory için işlemler -----
+app.get('/api/category/income', async (req, res) => {
+  const categories = await prisma.category.findMany({
+    where: { type: 'income' },
+    orderBy: { name: 'asc' }
+  });
+  res.json(categories);
+});
+app.get('/api/category/expense', async (req, res) => {
+  const categories = await prisma.category.findMany({
+    where: { type: 'expense' },
+    orderBy: { name: 'asc' }
+  });
+  res.json(categories);
+});
 // ----- Ortak işlemler -----
 app.get('/api/income/summary', async (req, res) => {
   const period = req.query.period as string;
