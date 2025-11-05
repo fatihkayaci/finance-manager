@@ -9,7 +9,7 @@ interface TransactionType {
   createdAt: string;
   time?: string;
   description: string;
-  category: string;
+  categoryId: number;
   amount: number;
   type: string;
   paymentMethod?: string;
@@ -31,7 +31,7 @@ export default function QuickAddForm({ type = "income", onAdd }: QuickAddFormPro
   const [category, setCategory] = useState<Category[]>([]);
   const [formData, setFormData] = useState({
     amount: '',
-    category: 'Restoran',
+    categoryId: 0,
     description: '',
     date: new Date().toISOString().split('T')[0],
     paymentMethod: 'Nakit'
@@ -50,7 +50,7 @@ export default function QuickAddForm({ type = "income", onAdd }: QuickAddFormPro
         },
         body: JSON.stringify({
           amount: parseFloat(formData.amount),
-          category: formData.category,
+          categoryId: formData.categoryId,
           description: formData.description,
           date: formData.date,
           paymentMethod: formData.paymentMethod // ← YENİ
@@ -67,10 +67,10 @@ export default function QuickAddForm({ type = "income", onAdd }: QuickAddFormPro
       // Formu temizle
       setFormData({
         amount: '',
-        category: 'Restoran',
+        categoryId: 0,
         description: '',
         date: new Date().toISOString().split('T')[0],
-        paymentMethod: 'Nakit' // ← YENİ: Reset değeri
+        paymentMethod: 'Nakit'
       });
       onAdd(createdIncome);
 
@@ -123,12 +123,12 @@ export default function QuickAddForm({ type = "income", onAdd }: QuickAddFormPro
             <label className="form-label">Kategori</label>
             <select 
               className="form-select"
-              value={formData.category}
-              onChange={(e) => setFormData({ ...formData, category: e.target.value })}
+              value={formData.categoryId}
+              onChange={(e) => setFormData({ ...formData, categoryId: parseInt(e.target.value) })}
             >
               <option value="">Kategori Seçin</option>
               {category.map(cat => (
-                <option key={cat.id} value={cat.name}>
+                <option key={cat.id} value={cat.id}>
                   {cat.icon} {cat.name}
                 </option>
               ))}

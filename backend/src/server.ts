@@ -72,6 +72,9 @@ app.delete('/api/transactions/:id', async (req, res) => {
 app.get('/api/income', async (req, res) => {
   const incomes = await prisma.transaction.findMany({
     where: { type: 'income' },
+    include:{
+      category: true
+    },
     orderBy: { date: 'desc' }
   });
   const formatted = incomes.map(income => ({
@@ -87,7 +90,7 @@ app.get('/api/income', async (req, res) => {
 });
 app.post('/api/income', async (req, res) => {
   try {
-    const { amount, category, description, date, paymentMethod } = req.body;
+    const { amount, categoryId, description, date, paymentMethod } = req.body;
     
     if (!amount || amount <= 0)
       return res.status(400).json({ error: "Tutar 0'dan büyük olmalı." });
@@ -105,7 +108,7 @@ app.post('/api/income', async (req, res) => {
       data: {
         type: 'income',
         amount: finalAmount,
-        category,
+        categoryId,
         description,
         date: new Date(date),
         paymentMethod,
@@ -166,6 +169,9 @@ app.put('/api/income/:id', async (req, res) => {
 app.get('/api/expense', async (req, res) => {
   const expenses = await prisma.transaction.findMany({
     where: { type: 'expense' },
+    include:{
+      category: true
+    },
     orderBy: { date: 'desc' }
   });
   const formatted = expenses.map(expense => ({
@@ -185,14 +191,14 @@ app.get('/api/expense', async (req, res) => {
 });
 app.post('/api/expense', async (req, res) => {
   try {
-    const { amount, category, description, date } = req.body;
+    const { amount, categoryId, description, date } = req.body;
     if (!amount || amount <= 0)
       return res.status(400).json({ error: "Tutar 0'dan büyük olmalı." });
     const expense = await prisma.transaction.create({
       data: {
         type: 'expense',
         amount,
-        category,
+        categoryId,
         description,
         date: new Date(date)
       }

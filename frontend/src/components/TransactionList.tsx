@@ -3,16 +3,22 @@ import EditModal from './EditModal';
 import {useState} from 'react';
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
-
+interface Category {
+  id: number;
+  name: string;
+  icon: string;
+  color: string;
+}
 interface transactionData {
   id: number;
   date: string;
   time?: string;
   description: string;
-  category: string;
+  categoryId: number;
+  category?: Category;
   amount: number;
-  paymentMethod?: string;   // ← YENİ
-  commission?: number;      // ← YENİ
+  paymentMethod?: string;
+  commission?: number;
 }
 
 interface TransactionListProps {
@@ -25,7 +31,7 @@ interface TransactionListProps {
 export default function TransactionList({ data, onDelete, onUpdate, type }: TransactionListProps) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedTransaction, setSelectedTransaction] = useState<transactionData | null>(null);
-
+  console.log(data);
   const handleDelete = async (id: number) => {
     console.log('📤 siliniyor:', id);
     try {
@@ -134,7 +140,7 @@ export default function TransactionList({ data, onDelete, onUpdate, type }: Tran
               <th>Tarih</th>
               <th>Açıklama</th>
               <th>Kategori</th>
-              <th>Ödeme</th> {/* ← YENİ KOLON */}
+              <th>Ödeme</th>
               <th>Tutar</th>
               <th>İşlemler</th>
             </tr>
@@ -148,12 +154,11 @@ export default function TransactionList({ data, onDelete, onUpdate, type }: Tran
                   </td>
                   <td className="description-cell">{transaction.description}</td>
                   <td>
-                    <span className={`category-badge category-${transaction.category.toLowerCase()}`}>
-                      {transaction.category}
+                    <span className={`category-badge category-${transaction.category?.name}`}>
+                      {transaction.category?.name}
                     </span>
                   </td>
                   
-                  {/* ✨ YENİ: Ödeme Yöntemi */}
                   <td>
                     <span className="payment-badge">
                       {transaction.paymentMethod === 'Kredi Kartı' && '💳'}
