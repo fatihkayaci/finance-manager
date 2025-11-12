@@ -17,6 +17,7 @@ interface Transaction {
   description: string;
   paymentMethod: string;
   date: string;
+  paymentIcon: string;
 }
 
 function Reports() {

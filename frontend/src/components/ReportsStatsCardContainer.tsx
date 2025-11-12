@@ -3,20 +3,23 @@ import ReportsStatCard from './ReportsStatCard';
 
 interface Transaction {
   id: number;
-  date: string;
-  category: string;
-  categoryIcon: string;
+  amount: number;
+  category: {
+    icon: string;
+    name: string;
+    color: string;
+    type: 'income' | 'expense';
+  };
+  type: 'income' | 'expense';
   description: string;
   paymentMethod: string;
-  paymentIcon: string;
-  amount: number;
-  type: 'income' | 'expense';
-}
-interface Props{
-  data: Transaction[];
+  date: string;
 }
 
-export default function ReportsStatsCardContainer({data} : Props) {
+interface CategorySummaryProps {
+  data: Transaction[];
+}
+export default function ReportsStatsCardContainer({data} : CategorySummaryProps) {
 
   
   const totalValue = (data: Transaction[], type: string) => {

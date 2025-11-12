@@ -1,28 +1,27 @@
 import './TransactionTable.css';
 
+
 interface Transaction {
   id: number;
-  date: string;
-  category: Category;
-  categoryIcon: string;
+  amount: number;
+  category: {
+    icon: string;
+    name: string;
+    color: string;
+    type: 'income' | 'expense';
+  };
+  type: 'income' | 'expense';
   description: string;
   paymentMethod: string;
+  date: string;
   paymentIcon: string;
-  amount: number;
-  type: 'income' | 'expense';
 }
-interface Category {
-  id: number;
-  name: string;
-  icon: string;
-  type?: string;
-  color: string;
-}
-interface Props{
+
+interface CategorySummaryProps {
   data: Transaction[];
 }
 
-export default function TransactionTable({data} : Props) {
+export default function TransactionTable({data} : CategorySummaryProps) {
 
   const totalRecords = data.length;
   console.log(data);
