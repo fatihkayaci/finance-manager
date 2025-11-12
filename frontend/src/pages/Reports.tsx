@@ -6,14 +6,17 @@ import TransactionTable from '../components/TransactionTable';
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 interface Transaction {
   id: number;
-  date: string;
-  category: string;
-  categoryIcon: string;
+  amount: number;
+  category: {
+    icon: string;
+    name: string;
+    color: string;
+    type: 'income' | 'expense';
+  };
+  type: 'income' | 'expense';
   description: string;
   paymentMethod: string;
-  paymentIcon: string;
-  amount: number;
-  type: 'income' | 'expense';
+  date: string;
 }
 
 function Reports() {
@@ -27,7 +30,10 @@ function Reports() {
       }
     })
     .then(response => {
-      return response.json();
+      const a = response.json();
+      console.log("response:");
+      console.log(a);
+      return a;
     })
     .then(data => {
       setTransactions(data);
@@ -40,8 +46,8 @@ function Reports() {
     <>
       <ReportsHeader />
       <ReportsStatsCardContainer data={transactions}/>
-      <CategorySummary />
       <TransactionTable data={transactions}/>
+      <CategorySummary data={transactions}/>
     </>
   );
 

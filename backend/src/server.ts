@@ -259,6 +259,7 @@ app.get('/api/category/expense', async (req, res) => {
   });
   res.json(categories);
 });
+
 // ----- Ortak işlemler -----
 app.get('/api/income/summary', async (req, res) => {
   const period = req.query.period as string;
