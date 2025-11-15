@@ -1,9 +1,26 @@
 import { useState } from 'react';
 import './ReportsHeader.css';
 import Filter from './Reports/Filter';
+interface Transaction {
+  id: number;
+  amount: number;
+  category: {
+    icon: string;
+    name: string;
+    color: string;
+    type: 'income' | 'expense';
+  };
+  type: 'income' | 'expense';
+  description: string;
+  paymentMethod: string;
+  date: string;
+  paymentIcon: string;
+}
+interface ReportsHeaderProps {
+  onFilterApply: (data: Transaction[]) => void;
+}
 
-
-export default function ReportsHeader() {
+export default function ReportsHeader({ onFilterApply }: ReportsHeaderProps) {
   const [isFilterOpen, setIsFilterOpen] = useState(false);
 
   const toggleFilter = () => {
@@ -28,7 +45,7 @@ export default function ReportsHeader() {
 
       {isFilterOpen && (
         <div className="filter-container">
-          <Filter />
+          <Filter onFilterApply={onFilterApply}/>
         </div>
       )}
     </>

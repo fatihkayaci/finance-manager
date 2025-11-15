@@ -260,6 +260,134 @@ app.get('/api/category/expense', async (req, res) => {
   res.json(categories);
 });
 
+// ----- filter işlemler -----
+
+app.post('/api/filter', async (req, res) => {
+  try {
+    const { zamanAraligi, baslangicTarihi, bitisTarihi, kategori, odemeYontemi, islemTipi, siralama } = req.body;
+    const where: any = {};
+    if (islemTipi) {
+      where.type = islemTipi === 'gelir' ? 'income' : 'expense';
+    }
+    if (kategori) {
+      where.categoryId = parseInt(kategori);  // '3' → 3
+    }
+    if (islemTipi){
+      where.type = islemTipi;
+    }
+    if (odemeYontemi) {
+      where.paymentMethod = odemeYontemi;
+    }
+    if (zamanAraligi === 'ozel' && baslangicTarihi && bitisTarihi) {
+      where.date = {
+        gte: new Date(baslangicTarihi),
+        lte: new Date(bitisTarihi)
+      };
+    } else if (zamanAraligi === 'bugun') {
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      const tomorrow = new Date();
+      tomorrow.setHours(23, 59, 59, 999);
+      
+      where.date = {
+        gte: today,
+        lte: tomorrow
+      };
+    } else if (zamanAraligi === 'bu-hafta') {
+      // Bugünden 7 gün önce
+      const weekAgo = new Date();
+      weekAgo.setDate(weekAgo.getDate() - 7);
+      weekAgo.setHours(0, 0, 0, 0);
+      
+      where.date = {
+        gte: weekAgo,
+        lte: new Date()
+      };
+    } else if (zamanAraligi === 'bu-ay') {
+      const firstDay = new Date();
+      firstDay.setDate(1);
+      firstDay.setHours(0, 0, 0, 0);
+      
+      where.date = {
+        gte: firstDay,
+        lte: new Date()
+      };
+    } else if (zamanAraligi === 'bu-yil') {
+      const firstDay = new Date();
+      firstDay.setMonth(0, 1);
+      firstDay.setHours(0, 0, 0, 0);
+      
+      where.date = {
+        gte: firstDay,
+        lte: new Date()
+      };
+    }
+
+    let orderBy: any = { date: 'desc' }; 
+    if (siralama === 'yeni-eski') {
+      orderBy = { date: 'desc' };
+    } else if (siralama === 'eski-yeni') {
+      orderBy = { date: 'asc' };
+    } else if (siralama === 'tutar-yuksek') {
+      orderBy = { amount: 'desc' };
+    } else if (siralama === 'tutar-dusuk') {
+      orderBy = { amount: 'asc' };
+    }
+    const transactions = await prisma.transaction.findMany({
+      where,
+      include: { category: true },
+      orderBy
+    });
+    const formatted = transactions.map(transaction => ({
+      ...transaction,
+      dateISO: transaction.date.toISOString().split('T')[0],
+      date: transaction.date.toLocaleDateString('tr-TR', { 
+        day: 'numeric',
+        month: 'long',
+        year: 'numeric'
+      })
+    }));
+
+    res.json(formatted);
+  } catch (error) {
+    console.error('Hata:', error);
+    res.status(500).json({ error: 'Bir hata oluştu.' });
+  }
+
+});
+
+app.get('/api/filter-options', async (req, res) => {
+  try {
+    const categories = await prisma.category.findMany({
+      orderBy: { name: 'asc' }
+    });
+    
+    const paymentMethodsData = await prisma.transaction.findMany({
+      where: {
+        paymentMethod: { not: null }
+      },
+      distinct: ['paymentMethod'],
+      select: { paymentMethod: true }
+    });
+    
+    const paymentMethods = paymentMethodsData.map(m => m.paymentMethod);
+    
+    const transactionTypes = [
+      { value: 'income', label: 'Gelir' },
+      { value: 'expense', label: 'Gider' }
+    ];
+    
+    res.json({
+      categories,
+      paymentMethods,
+      transactionTypes
+    });
+    
+  } catch (error) {
+    console.error('Hata:', error);
+    res.status(500).json({ error: 'Filter seçenekleri alınamadı' });
+  }
+});
 // ----- Ortak işlemler -----
 app.get('/api/income/summary', async (req, res) => {
   const period = req.query.period as string;

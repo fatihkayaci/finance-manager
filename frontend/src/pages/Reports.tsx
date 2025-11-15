@@ -30,12 +30,7 @@ function Reports() {
         'Content-Type': 'application/json'
       }
     })
-    .then(response => {
-      const a = response.json();
-      console.log("response:");
-      console.log(a);
-      return a;
-    })
+    .then(response => response.json())
     .then(data => {
       setTransactions(data);
     })
@@ -43,9 +38,12 @@ function Reports() {
       console.error('❌ Hata:', error);
     });
   }, []);
+  const handleFilterApply = (filteredData: Transaction[]) => {
+    setTransactions(filteredData);
+  };
   return (
     <>
-      <ReportsHeader />
+      <ReportsHeader onFilterApply={handleFilterApply}/>
       <ReportsStatsCardContainer data={transactions}/>
       <TransactionTable data={transactions}/>
       <CategorySummary data={transactions}/>

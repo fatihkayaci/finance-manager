@@ -1,23 +1,137 @@
-import { useState, type ChangeEvent } from 'react';
+import { useState, useEffect, type ChangeEvent, type FormEvent } from 'react';
 import "./Filter.css";
-export default function Filter() {
+const API_BASE_URL: string = import.meta.env.VITE_API_BASE_URL;
+export interface Category {
+  id: number;
+  name: string;
+  type: 'income' | 'expense';
+}
+
+export interface TransactionType {
+  value: 'income' | 'expense';
+  label: string;
+}
+
+export interface FilterOptions {
+  categories: Category[];
+  paymentMethods: string[];
+  transactionTypes: TransactionType[];
+}
+
+export interface FilterData {
+  zamanAraligi: string;
+  baslangicTarihi: string;
+  bitisTarihi: string;
+  kategori: string;
+  odemeYontemi: string;
+  islemTipi: string;
+  siralama: string;
+}
+interface Transaction {
+  id: number;
+  amount: number;
+  category: {
+    icon: string;
+    name: string;
+    color: string;
+    type: 'income' | 'expense';
+  };
+  type: 'income' | 'expense';
+  description: string;
+  paymentMethod: string;
+  date: string;
+  paymentIcon: string;
+}
+interface FilterProps {
+  onFilterApply: (data: Transaction[]) => void;  // ← Type ekle
+}
+export default function Filter({ onFilterApply }: FilterProps) {
     const [privateTime, setPrivateTime] = useState(false);
     
+    const [filterData, setFilterData] = useState<FilterData>({
+        zamanAraligi: '',
+        baslangicTarihi: '',
+        bitisTarihi: '',
+        kategori: '',
+        odemeYontemi: '',
+        islemTipi: '',
+        siralama: 'yeni-eski'
+    });
+    const [filterOptions, setFilterOptions] = useState<FilterOptions>({
+        categories: [],
+        paymentMethods: [],
+        transactionTypes: []
+    });
+
+    useEffect(() => {
+        fetch(`${API_BASE_URL}/filter-options`)
+            .then(res => res.json())
+            .then((data: FilterOptions) => setFilterOptions(data))
+            .catch(err => console.error('Hata:', err));
+    }, []);
+
     const handleTimeRangeChange = (e: ChangeEvent<HTMLSelectElement>) => {
-        if (e.target.value === "ozel") {
+        const value = e.target.value;
+        // Önce state'i güncelle
+        handleInputChange(e);
+        
+        // Sonra privateTime'ı ayarla
+        if (value === "ozel") {
             setPrivateTime(true);
         } else {
             setPrivateTime(false);
         }
     };
+    const handleInputChange = (e: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+        const { name, value } = e.target;
+        setFilterData(prev => ({ ...prev, [name]: value }));
+    };
 
+    // Uygula butonuna basınca
+    const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
+        console.log('Filter Data:', filterData);
+        try {
+            const response = await fetch(`${API_BASE_URL}/filter`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(filterData)
+            });
+            
+            const data = await response.json();
+            console.log('Gelen veri:', data);
+            
+            onFilterApply(data);
+        } catch (error) {
+            console.error('❌ Hata:', error);
+        }
+    };
+    const handleClear = () => {
+        setFilterData({
+            zamanAraligi: '',
+            baslangicTarihi: '',
+            bitisTarihi: '',
+            kategori: '',
+            odemeYontemi: '',
+            islemTipi: '',
+            siralama: 'yeni-eski'
+        });
+        setPrivateTime(false);
+    };
     return (
         <>
-            <form className="filter-form">
+            <form className="filter-form" onSubmit={handleSubmit}>
                 <div className="filter-row">
                     <div className="filter-field">
                         <label htmlFor="zaman-araligi">Zaman Aralığı</label>
-                        <select id="zaman-araligi" name="zamanAraligi" onChange={handleTimeRangeChange}>
+                        <select 
+                            id="zaman-araligi" 
+                            name="zamanAraligi" 
+                            value={filterData.zamanAraligi}
+                            onChange={handleTimeRangeChange}
+                        >
                             <option value="">Tüm Zamanlar</option>
                             <option value="bugun">Bugün</option>
                             <option value="bu-hafta">Bu Hafta</option>
@@ -35,6 +149,8 @@ export default function Filter() {
                                     type="date" 
                                     id="baslangic-tarihi" 
                                     name="baslangicTarihi"
+                                    value={filterData.baslangicTarihi}
+                                    onChange={handleInputChange}
                                     placeholder="mm/dd/yyyy"
                                 />
                             </div>
@@ -45,6 +161,8 @@ export default function Filter() {
                                     type="date" 
                                     id="bitis-tarihi" 
                                     name="bitisTarihi"
+                                    value={filterData.bitisTarihi}
+                                    onChange={handleInputChange}
                                     placeholder="mm/dd/yyyy"
                                 />
                             </div>
@@ -53,11 +171,16 @@ export default function Filter() {
                     
                     <div className="filter-field">
                         <label htmlFor="kategori">Kategori</label>
-                        <select id="kategori" name="kategori">
+                        <select 
+                            id="kategori" 
+                            name="kategori"
+                            value={filterData.kategori}
+                            onChange={handleInputChange}
+                        >
                             <option value="">Tüm Kategoriler</option>
-                            <option value="gelir">Gelir</option>
-                            <option value="gider">Gider</option>
-                            <option value="yatirim">Yatırım</option>
+                            {filterOptions.categories.map(cat => (
+                                <option key={cat.id} value={cat.id}>{cat.name}</option>
+                            ))}
                         </select>
                     </div>
                 </div>
@@ -65,26 +188,37 @@ export default function Filter() {
                 <div className="filter-row">
                     <div className="filter-field">
                         <label htmlFor="odeme-yontemi">Ödeme Yöntemi</label>
-                        <select id="odeme-yontemi" name="odemeYontemi">
+                        <select id="odeme-yontemi" name="odemeYontemi" value={filterData.odemeYontemi} onChange={handleInputChange}>
                             <option value="">Tüm Ödeme Yöntemleri</option>
-                            <option value="nakit">Nakit</option>
-                            <option value="kredi-karti">Kredi Kartı</option>
-                            <option value="banka-transferi">Banka Transferi</option>
+                            {filterOptions.paymentMethods.map(method => (
+                                <option key={method} value={method}>{method}</option>
+                            ))}
                         </select>
                     </div>
 
                     <div className="filter-field">
                         <label htmlFor="islem-tipi">İşlem Tipi</label>
-                        <select id="islem-tipi" name="islemTipi">
+                        <select 
+                            id="islem-tipi" 
+                            name="islemTipi"
+                            value={filterData.islemTipi}
+                            onChange={handleInputChange}
+                        >
                             <option value="">Hepsi</option>
-                            <option value="gelir">Gelir</option>
-                            <option value="gider">Gider</option>
+                            {filterOptions.transactionTypes.map(type => (
+                                <option key={type.value} value={type.value}>{type.label}</option>
+                            ))}
                         </select>
                     </div>
 
                     <div className="filter-field">
                         <label htmlFor="siralama">Sıralama</label>
-                        <select id="siralama" name="siralama">
+                        <select 
+                            id="siralama" 
+                            name="siralama"
+                            value={filterData.siralama}
+                            onChange={handleInputChange}
+                        >
                             <option value="yeni-eski">Tarih (Yeni → Eski)</option>
                             <option value="eski-yeni">Tarih (Eski → Yeni)</option>
                             <option value="tutar-yuksek">Tutar (Yüksek → Düşük)</option>
@@ -97,7 +231,7 @@ export default function Filter() {
                     <button type="submit" className="btn-apply">
                         ✓ Uygula
                     </button>
-                    <button type="button" className="btn-clear">
+                    <button type="button" className="btn-clear" onClick={handleClear}>
                         🗑️ Temizle
                     </button>
                 </div>
