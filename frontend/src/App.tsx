@@ -5,6 +5,7 @@ import SideBar from './components/SideBar';
 import Dashboard from './pages/Dashboard';
 import Reports from './pages/Reports';
 import Transaction from './pages/Transactions';
+import CategoryPage from './pages/CategoryPage';
 
 function App() {
   return (
@@ -21,6 +22,7 @@ function App() {
             <Route path="/income" element={<Transaction type="income"/>} />
             <Route path="/expense" element={<Transaction type="expense"/>} />
             <Route path="/reports" element={<Reports />} />
+            <Route path="/categoryPage" element={<CategoryPage />} />
           </Routes>
         </div>
       </div>

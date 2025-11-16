@@ -26,7 +26,7 @@ function SideBar() {
                     <div className="nav-icon">📈</div>
                     <span>Raporlar</span>
                 </Link>
-                <Link to="/categories" className={location.pathname === '/categories' ? 'nav-item active' : 'nav-item'}>
+                <Link to="/categoryPage" className={location.pathname === '/categoryPage' ? 'nav-item active' : 'nav-item'}>
                     <div className="nav-icon">📋</div>
                     <span>Kategoriler</span>
                 </Link>
