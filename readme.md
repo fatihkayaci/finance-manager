@@ -1,409 +1,211 @@
-# 💰 Finance Manager
+# 💰 Cash Management System
 
-A modern web application for managing personal and business finances.
+A professional web application for tracking income and expenses.
 
----
+## 🚀 Technologies
 
-## 📋 Project Description
+- **Frontend:** React + TypeScript + Vite
+- **Routing:** React Router DOM
+- **Styling:** Vanilla CSS
+- **Backend:** Node.js + Express + PostgreSQL (separate repo)
 
-Finance Manager is a comprehensive financial management application that allows you to track income and expenses. Organize your spending by categories, view statistics, and generate reports.
-
----
-
-## 🛠️ Technology Stack
-
-### **Frontend**
-- **React 18** - UI Library
-- **TypeScript** - Type Safety
-- **Vite** - Build Tool
-- **CSS3** - Styling
-
-### **Backend**
-- **Node.js + Express** - API Server
-- **Prisma** - ORM (Database Management)
-- **SQLite** - Database
-
-### **Developer Tools**
-- Git & GitHub
-- React DevTools
-- Postman (API Testing)
-
----
-
-## 📦 Installation
-
-### **1. Clone the Repository**
-```bash
-git clone https://github.com/fatihkayaci/finance-manager.git
-cd finance-manager
+## 📁 Project Structure
+```
+src/
+├── components/          # All components
+│   ├── common/          # Shared components (Button, Card, Input)
+│   ├── layout/          # Layout components (Sidebar, Header)
+│   │   ├── Layout.tsx
+│   │   ├── Sidebar.tsx
+│   │   └── Header.tsx
+│   ├── auth/            # Login/Register components
+│   ├── transactions/    # Income/Expense components
+│   ├── categories/      # Category components
+│   └── reports/         # Report components
+│
+├── pages/               # Page components
+│   ├── auth/
+│   ├── DashboardPage.tsx
+│   ├── IncomePage.tsx
+│   ├── ExpensePage.tsx
+│   ├── CategoryPage.tsx
+│   ├── ReportsPage.tsx
+│   └── BudgetPage.tsx
+│
+├── types/               # TypeScript type definitions
+│   └── index.ts         # All interfaces here
+│
+├── services/            # API services
+│   ├── api.ts           # Base API configuration
+│   ├── authService.ts   # Authentication operations
+│   ├── transactionService.ts
+│   └── categoryService.ts
+│
+├── hooks/               # Custom React hooks
+│   ├── useAuth.ts
+│   ├── useTransactions.ts
+│   └── useCategories.ts
+│
+├── context/             # React Context (State management)
+│   └── AuthContext.tsx
+│
+├── utils/               # Helper functions
+│   ├── formatters.ts    # Currency format, date format, etc.
+│   └── constants.ts     # Constant values
+│
+├── styles/              # Global CSS files
+│   └── globals.css
+│
+├── App.tsx              # Main application + Routing
+└── main.tsx             # Entry point
 ```
 
-### **2. Backend Setup**
+## 🎯 Architectural Principles
 
+### 1. Component Separation
+- Each component in its own folder
+- Component + CSS together
+- Single responsibility principle
+
+### 2. Type Safety
+- All types in `types/index.ts`
+- Every function/component is typed
+- Flexible structure with Generics
+
+### 3. Service Layer
+- API calls separated from components
+- Single `api.ts` base config
+- Separate service file for each feature
+
+### 4. Routing Structure
+- Shared layout with nested routes
+- `Layout.tsx` wraps all pages
+- Dynamic content with `<Outlet />`
+
+## 🔑 Key Files
+
+### `types/index.ts`
+All TypeScript type/interface definitions:
+- User, Transaction, Category, Budget
+- API request/response types
+- Form data types
+
+### `services/api.ts`
+Centralized API configuration:
+- Base URL setup
+- Token management
+- HTTP methods (get, post, put, delete)
+- Error handling
+
+### `App.tsx`
+Main routing structure:
+- React Router configuration
+- Nested routes
+- Layout wrapper
+
+### `components/layout/Layout.tsx`
+Shared layout structure:
+- Sidebar + Header + Content
+- Dynamic page rendering with `<Outlet />`
+
+## 🛠️ Installation
 ```bash
-cd backend
-
 # Install dependencies
 npm install
-
-# Create the database
-npx prisma migrate dev
-
-# Start the server
-npm run dev
-```
-
-Server will run at: `http://localhost:3000`
-
-### **3. Frontend Setup**
-
-```bash
-cd frontend
-
-# Install dependencies
-npm install
-
-# Create environment file
-echo "VITE_API_BASE_URL=http://localhost:3000/api" > .env
 
 # Start development server
 npm run dev
+
+# Build for production
+npm run build
 ```
 
-Frontend will open at: `http://localhost:5173`
+## 📦 Environment Variables
 
----
-
-## 🚀 Getting Started
-
-1. **Start the backend**
-   ```bash
-   cd backend && npm run dev
-   ```
-
-2. **Start the frontend** (new terminal)
-   ```bash
-   cd frontend && npm run dev
-   ```
-
-3. **Open in browser**
-   ```
-   http://localhost:5173
-   ```
-
----
-
-## 🗄️ Database
-
-### **Schema**
-```sql
-CREATE TABLE IF NOT EXISTS "Transaction" (
-    "id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
-    "type" TEXT NOT NULL,              -- 'income' or 'expense'
-    "amount" REAL NOT NULL,             -- Amount
-    "category" TEXT NOT NULL,           -- Category
-    "description" TEXT,                 -- Description
-    "date" DATETIME NOT NULL,           -- Transaction date
-    "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updatedAt" DATETIME NOT NULL
-);
+Create a `.env` file:
+```env
+VITE_API_BASE_URL=http://localhost:5000/api
 ```
 
-### **Database Type**
-- **SQLite** - Lightweight, file-based database
-- **Location:** `backend/prisma/dev.db`
+## 📋 TODO
 
-### **Sample Data**
-```json
-{
-  "id": 1,
-  "type": "income",
-  "amount": 5000.00,
-  "category": "Restaurant",
-  "description": "Sample income",
-  "date": "2025-10-24T00:00:00Z",
-  "createdAt": "2025-10-24T12:30:00Z",
-  "updatedAt": "2025-10-24T12:30:00Z"
-}
+- [ ] Complete category page
+- [ ] Complete dashboard page
+- [ ] Complete income/expense pages
+- [ ] Complete reports page
+- [ ] Integrate auth system
+- [ ] Connect to backend
+
+## 🎓 Learning Notes
+
+### Folder Structure Logic
+
+#### `components/`
+Reusable UI parts. Each component:
+- In its own folder
+- `.tsx` + `.css` files together
+- Customizable with props
+
+#### `pages/`
+Full pages corresponding to routes:
+- Page structure only
+- Combines components
+- No business logic
+
+#### `services/`
+Backend communication:
+- API calls
+- Data fetching
+- Error handling
+
+#### `types/`
+TypeScript type definitions:
+- Interfaces
+- Types
+- Enums (future)
+
+#### `hooks/`
+Custom React hooks:
+- State management
+- Side effects
+- Reusable logic
+
+## 🔄 Data Flow
+```
+User Action (Button Click)
+    ↓
+Component (onClick handler)
+    ↓
+Service (API call)
+    ↓
+Backend API
+    ↓
+Service (Response)
+    ↓
+Component (State update)
+    ↓
+UI Re-render
 ```
 
-### **Reset Database**
-```bash
-cd backend
-npx prisma migrate reset
-```
+## 📚 Resources
 
-### **View Database with Prisma Studio**
-```bash
-npx prisma studio
-# Opens at http://localhost:5555
-```
-
----
-
-## 📚 API Endpoints
-
-### **Income**
-
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| `GET` | `/api/income` | Get all incomes |
-| `GET` | `/api/income/:id` | Get income by ID |
-| `POST` | `/api/income` | Create new income |
-| `PUT` | `/api/income/:id` | Update income |
-| `DELETE` | `/api/income/:id` | Delete income |
-
-### **Expense**
-
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| `GET` | `/api/expense` | Get all expenses |
-| `GET` | `/api/expense/:id` | Get expense by ID |
-| `POST` | `/api/expense` | Create new expense |
-| `PUT` | `/api/expense/:id` | Update expense |
-| `DELETE` | `/api/expense/:id` | Delete expense |
-
-### **General (Transactions)**
-
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| `GET` | `/api/transactions` | Get all transactions |
-| `GET` | `/api/health` | API health check |
-
----
-
-## 📋 Request/Response Examples
-
-### **Add Income (POST)**
-
-**Request:**
-```javascript
-fetch('http://localhost:3000/api/income', {
-  method: 'POST',
-  headers: {
-    'Content-Type': 'application/json'
-  },
-  body: JSON.stringify({
-    amount: 5000,
-    category: 'Restaurant',
-    description: 'Sample income',
-    date: '2025-10-24'
-  })
-})
-```
-
-**Response:**
-```json
-{
-  "id": 1,
-  "type": "income",
-  "amount": 5000,
-  "category": "Restaurant",
-  "description": "Sample income",
-  "date": "2025-10-24T00:00:00Z",
-  "createdAt": "2025-10-24T12:30:00Z",
-  "updatedAt": "2025-10-24T12:30:00Z"
-}
-```
-
-### **Delete Income (DELETE)**
-
-**Request:**
-```javascript
-fetch('http://localhost:3000/api/income/1', {
-  method: 'DELETE'
-})
-```
-
-**Response:**
-```json
-{
-  "message": "Income deleted"
-}
-```
-
----
-
-## ✨ Currently Implemented Features
-
-### **Frontend**
-- ✅ Income page
-- ✅ Income list display
-- ✅ Add new income (form)
-- ✅ Delete income
-- ✅ Category-based view
-- ✅ Statistics (today/week/month)
-- ✅ Responsive design
-
-### **Backend**
-- ✅ SQLite database
-- ✅ Income CRUD operations (Create, Read, Delete)
-- ✅ Expense CRUD operations
-- ✅ Error handling
-- ✅ Validation
-- ✅ CORS support
-
----
-
-## 🔄 Planned Features
-
-### **Frontend**
-- 🔲 Edit income (Edit modal)
-- 🔲 Expense page
-- 🔲 Dashboard (Overview page)
-- 🔲 Filtering and search
-- 🔲 Charts and statistics (Chart.js)
-- 🔲 Reports page
-- 🔲 Dark mode
-- 🔲 Pagination
-
-### **Backend**
-- 🔲 Update income (PUT endpoint)
-- 🔲 Update expense (PUT endpoint)
-- 🔲 Advanced filtering
-- 🔲 User authentication
-- 🔲 Budget management
-- 🔲 Categories CRUD
-
----
-
-## 📁 Project Structure
-
-```
-finance-manager/
-├── frontend/
-│   ├── src/
-│   │   ├── pages/
-│   │   │   ├── Income.tsx
-│   │   │   ├── Expense.tsx
-│   │   │   ├── Dashboard.tsx
-│   │   │   └── Reports.tsx
-│   │   ├── components/
-│   │   │   ├── Header.tsx
-│   │   │   ├── SideBar.tsx
-│   │   │   ├── QuickAddForm.tsx
-│   │   │   ├── TransactionList.tsx
-│   │   │   ├── StatCard.tsx
-│   │   │   ├── StatCardContainer.tsx
-│   │   │   └── CategoryDistribution.tsx
-│   │   ├── App.tsx
-│   │   └── main.tsx
-│   ├── .env
-│   ├── .gitignore
-│   └── package.json
-│
-├── backend/
-│   ├── prisma/
-│   │   ├── schema.prisma
-│   │   └── migrations/
-│   ├── src/
-│   │   └── server.ts
-│   ├── .env
-│   ├── .gitignore
-│   └── package.json
-│
-└── README.md
-```
-
----
-
-## 🔧 Environment Variables
-
-### **Frontend (.env)**
-```
-VITE_API_BASE_URL=http://localhost:3000/api
-```
-
-### **Backend (.env)**
-```
-DATABASE_URL="file:./dev.db"
-PORT=3000
-NODE_ENV=development
-```
-
----
-
-## 🐛 Troubleshooting
-
-### **Backend Connection Failed**
-- Check if backend server is running
-- Ensure port 3000 is available
-- Verify `.env` file configuration
-
-### **Database Error**
-```bash
-# Reset database
-cd backend
-npx prisma migrate reset
-npx prisma migrate dev
-```
-
-### **CORS Error**
-- Verify CORS middleware is enabled in backend
-- Check if frontend URL is correct
-
----
-
-## 📝 Development Notes
-
-### **API Request Examples**
-```typescript
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
-
-// GET
-fetch(`${API_BASE_URL}/income`)
-
-// POST
-fetch(`${API_BASE_URL}/income`, {
-  method: 'POST',
-  headers: { 'Content-Type': 'application/json' },
-  body: JSON.stringify({ amount: 5000, ... })
-})
-
-// DELETE
-fetch(`${API_BASE_URL}/income/1`, {
-  method: 'DELETE'
-})
-```
-
-### **React Hooks Usage**
-- `useState` - State management
-- `useEffect` - API calls, run on page load
-- Props - Data flow between components
-
----
-
-## 👨‍💻 Author
-
-- **Developer:** [Fatih KAYACI](https://github.com/fatihkayaci)
-- **Start Date:** October 2025
-
----
-
-## 📄 License
-
-This project is licensed under the [MIT License](LICENSE).
-
----
+- [TypeScript Handbook](https://www.typescriptlang.org/docs/handbook/intro.html)
+- [React Documentation](https://react.dev/)
+- [React Router](https://reactrouter.com/)
+- [Vite Documentation](https://vitejs.dev/)
 
 ## 🤝 Contributing
 
-To contribute:
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to the branch (`git push origin feature/AmazingFeature`)
+1. Fork the project
+2. Create your feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'feat: Add amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
 5. Open a Pull Request
 
----
+## 📄 License
 
-## 📞 Contact
-
-- GitHub: [@fatihkayaci](https://github.com/fatihkayaci)
-- Email: info@fatihkayaci.com
+MIT
 
 ---
 
-**Project Status:** 🚧 Active Development
-
-Last Updated: October 2025
+💡 **Note:** This project is being developed for educational purposes.
