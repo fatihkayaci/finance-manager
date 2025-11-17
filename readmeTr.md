@@ -1,206 +1,240 @@
-# 💰 Kasa Yönetimi Sistemi
+# 💰 Kasa Backend API
 
-Gelir ve gider takibi için profesyonel bir web uygulaması.
+Kasa (Para Yönetimi) uygulamasının backend API'si. Node.js, Express, TypeScript ve Prisma ile geliştirilmiştir.
 
 ## 🚀 Teknolojiler
 
-- **Frontend:** React + TypeScript + Vite
-- **Routing:** React Router DOM
-- **Styling:** Vanilla CSS
-- **Backend:** Node.js + Express + PostgreSQL (ayrı repository)
+- **Çalışma Ortamı:** Node.js
+- **Framework:** Express.js
+- **Dil:** TypeScript
+- **Veritabanı:** SQLite
+- **ORM:** Prisma
+- **Kimlik Doğrulama:** JWT (JSON Web Token)
+- **Şifre Hashleme:** bcryptjs
 
 ## 📁 Proje Yapısı
 ```
-src/
-├── components/          # Tüm bileşenler
-│   ├── common/          # Ortak bileşenler (Button, Card, Input)
-│   ├── layout/          # Layout bileşenleri (Sidebar, Header)
-│   │   ├── Layout.tsx
-│   │   ├── Sidebar.tsx
-│   │   └── Header.tsx
-│   ├── auth/            # Giriş/Kayıt bileşenleri
-│   ├── transactions/    # Gelir/Gider bileşenleri
-│   ├── categories/      # Kategori bileşenleri
-│   └── reports/         # Rapor bileşenleri
+backend/
+├── prisma/
+│   ├── schema.prisma       # Veritabanı şeması
+│   └── dev.db              # SQLite veritabanı
 │
-├── pages/               # Sayfa bileşenleri
-│   ├── auth/
-│   ├── DashboardPage.tsx
-│   ├── IncomePage.tsx
-│   ├── ExpensePage.tsx
-│   ├── CategoryPage.tsx
-│   ├── ReportsPage.tsx
-│   └── BudgetPage.tsx
+├── src/
+│   ├── config/
+│   │   └── database.ts     # Prisma istemcisi
+│   │
+│   ├── types/
+│   │   └── index.ts        # TypeScript tip tanımları
+│   │
+│   ├── utils/
+│   │   ├── jwt.ts          # JWT token işlemleri
+│   │   └── password.ts     # Şifre hashleme işlemleri
+│   │
+│   ├── repositories/
+│   │   └── userRepository.ts    # Veritabanı işlemleri
+│   │
+│   ├── services/
+│   │   └── authService.ts       # İş mantığı
+│   │
+│   ├── controllers/
+│   │   └── authController.ts    # HTTP istek yöneticileri
+│   │
+│   ├── routes/
+│   │   └── authRoutes.ts        # API uç noktaları
+│   │
+│   ├── app.ts              # Express uygulama yapılandırması
+│   └── server.ts           # Sunucu başlangıç noktası
 │
-├── types/               # TypeScript tip tanımları
-│   └── index.ts         # Tüm interface'ler
-│
-├── services/            # API servisleri
-│   ├── api.ts           # Temel API yapılandırması
-│   ├── authService.ts   # Kimlik doğrulama işlemleri
-│   ├── transactionService.ts
-│   └── categoryService.ts
-│
-├── hooks/               # Özel React hook'ları
-│   ├── useAuth.ts
-│   ├── useTransactions.ts
-│   └── useCategories.ts
-│
-├── context/             # React Context (Durum yönetimi)
-│   └── AuthContext.tsx
-│
-├── utils/               # Yardımcı fonksiyonlar
-│   ├── formatters.ts    # Para formatı, tarih formatı vb.
-│   └── constants.ts     # Sabit değerler
-│
-├── styles/              # Global CSS dosyaları
-│   └── globals.css
-│
-├── App.tsx              # Ana uygulama + Yönlendirme
-└── main.tsx             # Giriş noktası
+├── .env                    # Ortam değişkenleri
+├── package.json
+├── tsconfig.json
+└── README.md
 ```
 
-## 🎯 Mimari Prensipler
+## 🏗️ Katmanlı Mimari
+```
+İstek → Route → Controller → Service → Repository → Veritabanı
+                                    ↓
+Yanıt ← Controller ← Service ← Repository ← Veritabanı
+```
 
-### 1. Bileşen Ayrımı
-- Her bileşen kendi klasöründe
-- Bileşen + CSS birlikte
-- Tek sorumluluk prensibi
+### **Katmanlar:**
 
-### 2. Tip Güvenliği
-- Tüm tipler `types/index.ts` dosyasında
-- Her fonksiyon/bileşen tiplendirilmiş
-- Generic'ler ile esnek yapı
+- **Routes:** API uç noktalarını tanımlar
+- **Controllers:** HTTP isteklerini yönetir (req, res)
+- **Services:** İş mantığını içerir (business logic)
+- **Repositories:** Veritabanı işlemlerini yapar (Prisma sorguları)
 
-### 3. Servis Katmanı
-- API çağrıları bileşenlerden ayrı
-- Tek bir `api.ts` temel yapılandırması
-- Her özellik için ayrı servis dosyası
+## 🔧 Kurulum
 
-### 4. Yönlendirme Yapısı
-- İç içe rotalar ile ortak layout
-- `Layout.tsx` tüm sayfaları sarar
-- `<Outlet />` ile dinamik içerik
-
-## 🔑 Önemli Dosyalar
-
-### `types/index.ts`
-Tüm TypeScript tip/interface tanımları:
-- User, Transaction, Category, Budget
-- API istek/yanıt tipleri
-- Form veri tipleri
-
-### `services/api.ts`
-Merkezi API yapılandırması:
-- Temel URL ayarı
-- Token yönetimi
-- HTTP metodları (get, post, put, delete)
-- Hata yakalama
-
-### `App.tsx`
-Ana yönlendirme yapısı:
-- React Router yapılandırması
-- İç içe rotalar
-- Layout sarmalayıcı
-
-### `components/layout/Layout.tsx`
-Ortak layout yapısı:
-- Sidebar + Header + İçerik
-- `<Outlet />` ile dinamik sayfa render
-
-## 🛠️ Kurulum
+### 1. Bağımlılıkları Yükle
 ```bash
-# Bağımlılıkları yükle
 npm install
+```
 
-# Geliştirme sunucusunu başlat
+### 2. Ortam Değişkenleri
+
+`.env` dosyası oluştur:
+```env
+PORT=3000
+NODE_ENV=development
+DATABASE_URL="file:./dev.db"
+
+JWT_SECRET=super_gizli_jwt_anahtari_uretimde_degistir
+JWT_EXPIRE=7d
+```
+
+### 3. Veritabanını Oluştur
+```bash
+# Prisma migration çalıştır
+npx prisma migrate dev --name init
+
+# Prisma Client oluştur
+npx prisma generate
+```
+
+### 4. Sunucuyu Başlat
+```bash
+# Geliştirme modu
 npm run dev
 
-# Production için derle
+# Üretim derlemesi
 npm run build
+npm start
 ```
 
-## 📦 Ortam Değişkenleri
+## 📡 API Uç Noktaları
 
-`.env` dosyası oluşturun:
-```env
-VITE_API_BASE_URL=http://localhost:5000/api
+### **Kimlik Doğrulama**
+
+#### Kayıt Ol
+```http
+POST /api/auth/register
+Content-Type: application/json
+
+{
+  "username": "ahmet",
+  "email": "ahmet@gmail.com",
+  "password": "123456"
+}
 ```
+
+**Yanıt (201 Created):**
+```json
+{
+  "success": true,
+  "message": "Kullanıcı başarıyla kaydedildi",
+  "data": {
+    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+    "user": {
+      "id": 1,
+      "username": "ahmet",
+      "email": "ahmet@gmail.com"
+    }
+  }
+}
+```
+
+#### Giriş Yap
+```http
+POST /api/auth/login
+Content-Type: application/json
+
+{
+  "email": "ahmet@gmail.com",
+  "password": "123456"
+}
+```
+
+**Yanıt (200 OK):**
+```json
+{
+  "success": true,
+  "message": "Giriş başarılı",
+  "data": {
+    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+    "user": {
+      "id": 1,
+      "username": "ahmet",
+      "email": "ahmet@gmail.com"
+    }
+  }
+}
+```
+
+## 🗄️ Veritabanı Şeması
+
+### **Kullanıcı Modeli**
+```prisma
+model User {
+  id        Int      @id @default(autoincrement())
+  username  String   @unique
+  email     String   @unique
+  password  String   # bcrypt ile hashlenmiş
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+```
+
+## 🔐 Güvenlik
+
+- **Şifre Hashleme:** bcryptjs ile şifreler hashlenip saklanır
+- **JWT Token:** Kullanıcı doğrulama için JWT token kullanılır
+- **Salt:** Her şifre için rastgele salt oluşturulur (hash içinde saklanır)
+- **Token Süresi:** Token'lar 7 gün sonra otomatik geçersiz olur
 
 ## 📋 Yapılacaklar
 
-- [ ] Kategori sayfasını tamamla
-- [ ] Dashboard sayfasını tamamla
-- [ ] Gelir/Gider sayfalarını tamamla
-- [ ] Raporlar sayfasını tamamla
-- [ ] Kimlik doğrulama sistemini entegre et
-- [ ] Backend bağlantısını kur
+- [x] Kullanıcı kimlik doğrulama (Kayıt/Giriş)
+- [x] JWT token sistemi
+- [x] Şifre hashleme
+- [ ] Kimlik doğrulama middleware'i (Korumalı rotalar)
+- [ ] Kategori CRUD
+- [ ] İşlem CRUD
+- [ ] Bütçe sistemi
+- [ ] Raporlar
 
-## 🎓 Öğrenme Notları
+## 🧪 Test
 
-### Klasör Yapısı Mantığı
+API'yi test etmek için Thunder Client, Postman veya curl kullanabilirsiniz:
+```bash
+# Sağlık kontrolü
+curl http://localhost:3000
 
-#### `components/`
-Yeniden kullanılabilir UI parçaları. Her bileşen:
-- Kendi klasöründe
-- `.tsx` + `.css` dosyaları birlikte
-- Props ile özelleştirilebilir
+# Kayıt ol
+curl -X POST http://localhost:3000/api/auth/register \
+  -H "Content-Type: application/json" \
+  -d '{"username":"test","email":"test@gmail.com","password":"123456"}'
 
-#### `pages/`
-Rotalara karşılık gelen tam sayfalar:
-- Sadece sayfa yapısı
-- Bileşenleri birleştirir
-- İş mantığı yok
-
-#### `services/`
-Backend ile iletişim:
-- API çağrıları
-- Veri çekme
-- Hata yönetimi
-
-#### `types/`
-TypeScript tip tanımları:
-- Interface'ler
-- Type'lar
-- Enum'lar (gelecekte)
-
-#### `hooks/`
-Özel React hook'ları:
-- Durum yönetimi
-- Yan etkiler
-- Yeniden kullanılabilir mantık
-
-## 🔄 Veri Akışı
-```
-Kullanıcı Eylemi (Buton Tıklama)
-    ↓
-Bileşen (onClick işleyicisi)
-    ↓
-Servis (API çağrısı)
-    ↓
-Backend API
-    ↓
-Servis (Yanıt)
-    ↓
-Bileşen (Durum güncelleme)
-    ↓
-UI Yeniden Render
+# Giriş yap
+curl -X POST http://localhost:3000/api/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{"email":"test@gmail.com","password":"123456"}'
 ```
 
-## 📚 Kaynaklar
+## 📚 Komutlar
+```bash
+npm run dev      # Geliştirme modu (ts-node-dev)
+npm run build    # TypeScript derlemesi
+npm start        # Üretim modu
+```
 
-- [TypeScript Handbook](https://www.typescriptlang.org/docs/handbook/intro.html)
-- [React Dokümantasyonu](https://react.dev/)
-- [React Router](https://reactrouter.com/)
-- [Vite Dokümantasyonu](https://vitejs.dev/)
+## 🤝 Geliştirme Notları
 
-## 🤝 Katkıda Bulunma
+### **TypeScript Yapılandırması**
+- ES2020 hedef
+- NodeNext modül sistemi
+- Katı tip kontrolü devre dışı (öğrenme aşaması)
 
-1. Projeyi fork edin
-2. Özellik dalınızı oluşturun (`git checkout -b feature/harika-ozellik`)
-3. Değişikliklerinizi commit edin (`git commit -m 'feat: Harika özellik ekle'`)
-4. Dalınıza push edin (`git push origin feature/harika-ozellik`)
-5. Pull Request açın
+### **Prisma**
+- SQLite veritabanı (dosya tabanlı)
+- Otomatik oluşturulan TypeScript tipleri
+- Şema değişiklikleri için migration sistemi
+
+### **Express Middleware'leri**
+- CORS etkin (frontend iletişimi)
+- JSON body parser
+- Controller'larda hata yakalama
 
 ## 📄 Lisans
 

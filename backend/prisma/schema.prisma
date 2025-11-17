@@ -10,31 +10,16 @@ generator client {
 
 datasource db {
   provider = "sqlite"
-  url      = "file:./dev.db"
+  url      = env("DATABASE_URL")
 }
 
-model transaction {
-  id            Int      @id @default(autoincrement())
-  type          String
-  amount        Float
-  categoryId    Int
-  category      category @relation(fields: [categoryId], references: [id])
-  description   String?
-  date          DateTime
-  paymentMethod String?
-  commission    Float?
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
-}
+model User {
+  id        Int      @id @default(autoincrement())
+  username  String   @unique
+  email     String   @unique
+  password  String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
-model category {
-  id            Int           @id @default(autoincrement())
-  name          String        @unique
-  icon          String
-  type          String
-  color         String
-  createdAt     DateTime      @default(now())
-  updatedAt     DateTime      @updatedAt
-  
-  transactions  transaction[]
+  @@map("users")
 }
