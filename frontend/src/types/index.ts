@@ -1,95 +1,28 @@
-// ============================================
-// KULLANICI TİPLERİ
-// ============================================
+// Backend'den gelen User tipini tanımlıyoruz
 export interface User {
   id: number;
+  username: string;
   email: string;
-  name: string;
-  createdAt: string;
 }
 
+// Login/Register formlarında kullanacağız
 export interface LoginData {
   email: string;
   password: string;
 }
 
 export interface RegisterData {
+  username: string;
   email: string;
   password: string;
-  name: string;
 }
 
-// ============================================
-// KATEGORİ TİPLERİ
-// ============================================
-export interface Category {
-  id: number;
-  name: string;
-  icon: string;
-  color: 'blue' | 'orange' | 'green' | 'red' | 'purple' | 'pink';
-  type: 'income' | 'expense';
-  userId: number;
-}
-
-export interface CreateCategoryData {
-  name: string;
-  icon: string;
-  color: string;
-  type: 'income' | 'expense';
-}
-
-// ============================================
-// TRANSACTION (GELİR/GİDER) TİPLERİ
-// ============================================
-export interface Transaction {
-  id: number;
-  amount: number;
-  description: string;
-  categoryId: number;
-  category?: Category;  // İlişkili kategori bilgisi (opsiyonel)
-  type: 'income' | 'expense';
-  paymentMethod: 'Nakit' | 'Kredi Kartı' | 'Banka Transferi';
-  date: string;
-  createdAt: string;
-  userId: number;
-}
-
-export interface CreateTransactionData {
-  amount: number;
-  description: string;
-  categoryId: number;
-  type: 'income' | 'expense';
-  paymentMethod: string;
-  date: string;
-}
-
-// ============================================
-// BÜTÇE TİPLERİ
-// ============================================
-export interface Budget {
-  id: number;
-  categoryId: number;
-  category?: Category;
-  limit: number;
-  month: string;  // "2025-01"
-  userId: number;
-}
-
-export interface CreateBudgetData {
-  categoryId: number;
-  limit: number;
-  month: string;
-}
-
-// ============================================
-// API RESPONSE TİPLERİ
-// ============================================
-export interface ApiResponse<T> {
-  data: T;
-  message?: string;
-}
-
+// Backend'den dönen response tipi
 export interface AuthResponse {
-  user: User;
-  token: string;
+  success: boolean;
+  message: string;
+  data: {
+    token: string;
+    user: User;
+  };
 }

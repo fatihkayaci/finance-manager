@@ -1,29 +1,22 @@
 // App.tsx
 
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
-import Layout from './components/layout/Layout';
-import DashboardPage from './pages/DashboardPage';
-import IncomePage from './pages/IncomePage';
-import ExpensePage from './pages/ExpensePage';
-import CategoryPage from './pages/CategoryPage';
-import ReportsPage from './pages/ReportsPage';
-import BudgetPage from './pages/BudgetPage';
+import { LoginPage } from './pages/auth/LoginPage';
+import { RegisterPage } from './pages/auth/RegisterPage';
+import  DashboardPage  from './pages/DashboardPage';
 import './styles/globals.css';
 
 function App() {
   return (
     <BrowserRouter>
       <Routes>
-        {/* Ana layout ile sarmalanmış sayfalar */}
-        <Route path="/" element={<Layout />}>
-          <Route index element={<Navigate to="/dashboard" replace />} />
-          <Route path="dashboard" element={<DashboardPage />} />
-          <Route path="income" element={<IncomePage />} />
-          <Route path="expense" element={<ExpensePage />} />
-          <Route path="categories" element={<CategoryPage />} />
-          <Route path="reports" element={<ReportsPage />} />
-          <Route path="budget" element={<BudgetPage />} />
-        </Route>
+        {/* Ana sayfa → Login'e yönlendir */}
+        <Route path="/" element={<Navigate to="/login" replace />} />
+        
+        {/* Login sayfası */}
+        <Route path="/login" element={<LoginPage />} />
+        <Route path="/register" element={<RegisterPage />} /> 
+        <Route path="/dashboard" element={<DashboardPage />} />
       </Routes>
     </BrowserRouter>
   );
