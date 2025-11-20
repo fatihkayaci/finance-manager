@@ -310,6 +310,11 @@ model User {
   - Automatic token injection
   - Error handling
   
+  ### **Authentication Flow Completed:**
+  - **AuthContext:** Manages global user state and authentication status.
+  - **Protected Route:** Redirects unauthenticated users to login page.
+  - **Persistency:** Keeps user logged in on page refresh using localStorage check.
+  
 - ✅ **authService.ts** - Authentication API calls
   - login()
   - register()
@@ -384,8 +389,8 @@ curl -X POST http://localhost:3000/api/auth/login \
 - [x] Dashboard page
 - [x] API service layer
 - [x] Token management (localStorage)
-- [ ] AuthContext (Global state)
-- [ ] Protected routes (Token verification)
+- [x] AuthContext (Global state)
+- [x] Protected routes (Token verification)
 - [ ] Category management
 - [ ] Transaction management
 - [ ] Reports
