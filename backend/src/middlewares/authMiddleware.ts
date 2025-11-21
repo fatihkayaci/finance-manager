@@ -26,7 +26,10 @@ export const protect = (req: AuthRequest, res: Response, next: NextFunction) => 
       const decoded = jwt.verify(token, process.env.JWT_SECRET as string) as any;
       console.log("✅ Token Çözüldü (Decoded):", decoded);
 
+      console.log(req.user);
       req.user = decoded;
+      console.log("req");
+      console.log(req.user);
       next();
     } catch (error) {
       console.error("❌ Token Doğrulama Hatası:", error);

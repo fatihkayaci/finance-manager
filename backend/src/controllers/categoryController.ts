@@ -30,6 +30,7 @@ export const getCategories = async (req: AuthRequest, res: Response) => {
 export const createCategory = async (req: AuthRequest, res: Response) => {
   try {
     // DÜZELTME BURADA DA:
+    console.log(req.user);
     const userId = req.user?.userId;
     const { name, type } = req.body;
 

@@ -47,3 +47,21 @@ export interface ApiResponse<T> {
   data: T;
   message?: string;
 }
+export interface Transaction {
+  id: number;
+  description: string;
+  amount: string; // Backend'den string olarak gelebilir (Decimal)
+  type: 'INCOME' | 'EXPENSE';
+  date: string;
+  categoryId: number;
+  category?: Category; // İlişkili kategori bilgisi (Opsiyonel)
+}
+
+// 4. Yeni İşlem Oluşturma Verisi
+export interface CreateTransactionData {
+  description: string;
+  amount: number;
+  type: 'INCOME' | 'EXPENSE';
+  date: string;
+  categoryId: number;
+}

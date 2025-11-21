@@ -375,14 +375,13 @@ curl -X POST http://localhost:3000/api/auth/login \
 ---
 
 ## 📋 Roadmap (To-Do)
-
 ### Backend:
 - [x] User authentication (Register/Login)
 - [x] JWT token system
 - [x] Password hashing
-- [x] Auth middleware (Protected routes) ✅
-- [x] Category CRUD (Create, Read, Delete) ✅
-- [ ] Transaction CRUD
+- [x] Auth middleware (Protected routes)
+- [x] Category CRUD (Create, Read, Delete)
+- [x] Transaction CRUD (Create, Read, Delete) ✅
 - [ ] Budget system
 - [ ] Reports
 
@@ -394,11 +393,10 @@ curl -X POST http://localhost:3000/api/auth/login \
 - [x] Token management (localStorage)
 - [x] AuthContext (Global state)
 - [x] Protected routes (Token verification)
-- [x] Category management (Add/Remove/List) ✅
-- [ ] Transaction management
+- [x] Category management (Add/Remove/List)
+- [x] Transaction management (Add/Remove/List) ✅
 - [ ] Reports
 - [ ] Budget tracking
-
 ---
 
 ## 🚦 Usage

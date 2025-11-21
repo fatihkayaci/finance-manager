@@ -14,23 +14,43 @@ datasource db {
 }
 
 model User {
-  id        Int      @id @default(autoincrement())
-  username  String   @unique
-  email     String   @unique
-  password  String
-  categories Category[]
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  @@map("users")
+  id           Int           @id @default(autoincrement())
+  username     String        @unique
+  email        String        @unique
+  password     String
+  categories   Category[]
+  transactions Transaction[] // <--- YENİ EKLENEN
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
 }
 
 model Category {
-  id        Int      @id @default(autoincrement())
-  name      String
-  type      String
-  userId    Int
-  user      User     @relation(fields: [userId], references: [id])
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  @@unique([name, userId]) 
+  id           Int           @id @default(autoincrement())
+  name         String
+  type         String        // "INCOME" | "EXPENSE"
+  userId       Int
+  user         User          @relation(fields: [userId], references: [id])
+  transactions Transaction[] // <--- YENİ EKLENEN
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+
+  @@unique([name, userId])
+}
+
+model Transaction {
+  id          Int      @id @default(autoincrement())
+  description String   // Açıklama (Örn: "Migros Alışverişi")
+  amount      Decimal  // Tutar (Para işleri için Decimal en iyisidir)
+  date        DateTime @default(now()) // İşlem tarihi
+  type        String   // "INCOME" | "EXPENSE" (Kategoriden de alabiliriz ama burada durması performansı artırır)
+  
+  // İlişkiler
+  userId      Int
+  user        User     @relation(fields: [userId], references: [id])
+  
+  categoryId  Int
+  category    Category @relation(fields: [categoryId], references: [id])
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 }
