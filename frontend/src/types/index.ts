@@ -26,3 +26,24 @@ export interface AuthResponse {
     user: User;
   };
 }
+// 1. Kategori Modeli (Backend'den gelen veri)
+export interface Category {
+  id: number;
+  name: string;
+  type: 'INCOME' | 'EXPENSE'; // Sadece bu iki değer olabilir
+  userId: number;
+}
+
+// 2. Yeni Kategori Eklerken Göndereceğimiz Veri
+export interface CreateCategoryData {
+  name: string;
+  type: 'INCOME' | 'EXPENSE';
+}
+
+// 3. API Cevaplarının Genel Kalıbı
+// (Backend'deki res.json({ success: true, data: ... }) yapısı)
+export interface ApiResponse<T> {
+  success: boolean;
+  data: T;
+  message?: string;
+}

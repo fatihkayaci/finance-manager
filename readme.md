@@ -273,6 +273,9 @@ model User {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
+### **Category Model**
+- Relation: One-to-Many (User -> Categories)
+- Unique Constraint: A user cannot have two categories with the same name.
 ```
 
 ---
@@ -373,17 +376,17 @@ curl -X POST http://localhost:3000/api/auth/login \
 
 ## 📋 Roadmap (To-Do)
 
-### **Backend:**
+### Backend:
 - [x] User authentication (Register/Login)
 - [x] JWT token system
 - [x] Password hashing
-- [ ] Auth middleware (Protected routes)
-- [ ] Category CRUD
+- [x] Auth middleware (Protected routes) ✅
+- [x] Category CRUD (Create, Read, Delete) ✅
 - [ ] Transaction CRUD
 - [ ] Budget system
 - [ ] Reports
 
-### **Frontend:**
+### Frontend:
 - [x] Login page
 - [x] Register page
 - [x] Dashboard page
@@ -391,7 +394,7 @@ curl -X POST http://localhost:3000/api/auth/login \
 - [x] Token management (localStorage)
 - [x] AuthContext (Global state)
 - [x] Protected routes (Token verification)
-- [ ] Category management
+- [x] Category management (Add/Remove/List) ✅
 - [ ] Transaction management
 - [ ] Reports
 - [ ] Budget tracking
