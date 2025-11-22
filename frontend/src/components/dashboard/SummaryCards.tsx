@@ -1,5 +1,3 @@
-import React from 'react';
-
 // Bu bileşen 3 tane sayı bekler
 interface SummaryCardsProps {
   income: number;
