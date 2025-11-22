@@ -1,7 +1,7 @@
 // services/api.ts
 
 // Backend URL'ini .env'den al
-const API_BASE_URL = 'https://kasa-app-backend.onrender.com/api'
+const API_BASE_URL = 'https://cash-app-backend-wg7y.onrender.com/api';
 // ============================================
 // HELPER FUNCTION - HTTP İSTEĞİ YAPAN FONKSİYON
 // ============================================
