@@ -3,6 +3,7 @@ import { useAuth } from '../context/AuthContext';
 import { getCategories, createCategory, deleteCategory } from '../services/categoryService';
 import { getTransactions, createTransaction, deleteTransaction } from '../services/transactionService'; // Yeni import
 import type { Category, Transaction } from '../types';
+import { SummaryCards } from '../components/dashboard/SummaryCards';
 
 export const DashboardPage = () => {
   const { user, logout } = useAuth();
@@ -27,6 +28,20 @@ export const DashboardPage = () => {
   useEffect(() => {
     fetchData();
   }, []);
+
+  // --- HESAPLAMALAR ---
+  // 1. Gelirleri Topla
+  const totalIncome = transactions
+    .filter(t => t.type === 'INCOME')
+    .reduce((acc, curr) => acc + Number(curr.amount), 0);
+
+  // 2. Giderleri Topla
+  const totalExpense = transactions
+    .filter(t => t.type === 'EXPENSE')
+    .reduce((acc, curr) => acc + Number(curr.amount), 0);
+
+  // 3. Bakiyeyi Bul
+  const balance = totalIncome - totalExpense;
 
   const fetchData = async () => {
     try {
@@ -113,7 +128,11 @@ export const DashboardPage = () => {
           <button onClick={logout} style={styles.logoutBtn}>Çıkış</button>
         </div>
       </header>
-
+      <SummaryCards 
+        income={totalIncome} 
+        expense={totalExpense} 
+        balance={balance} 
+      />
       {/* --- ANA IZGARA (GRID) --- */}
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '30px' }}>
         
@@ -181,29 +200,36 @@ export const DashboardPage = () => {
           <div style={{ maxHeight: '500px', overflowY: 'auto' }}>
             {loading ? <p>Yükleniyor...</p> : transactions.map(t => (
               <div key={t.id} style={styles.transactionItem}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                   {/* Renkli Yuvarlak Simge */}
-                  <div style={{ 
-                    width: '40px', height: '40px', borderRadius: '50%', 
-                    background: t.type === 'INCOME' ? '#e8f5e9' : '#ffebee',
-                    display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    fontSize: '20px'
-                  }}>
-                    {t.type === 'INCOME' ? '💰' : '💸'}
+                <div>
+                  <div style={{ fontWeight: 'bold' }}>{t.category?.name || 'Genel'}</div>
+                  
+                  {/* TARİH FORMATI (toLocaleDateString) */}
+                  <div style={{ fontSize: '12px', color: '#777' }}>
+                      {t.description ? `${t.description} • ` : ''} 
+                      {new Date(t.date).toLocaleDateString('tr-TR', { 
+                          day: 'numeric', 
+                          month: 'long', 
+                          year: 'numeric' 
+                      })}
                   </div>
-                  <div>
-                    <div style={{ fontWeight: 'bold' }}>{t.category?.name || 'Genel'}</div>
-                    <div style={{ fontSize: '12px', color: '#777' }}>{t.description || t.date.split('T')[0]}</div>
-                  </div>
-                </div>
+              </div>
                 
                 <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+    
+                  {/* PARA BİRİMİ FORMATI (Intl.NumberFormat) */}
                   <span style={{ 
                     fontWeight: 'bold', 
-                    color: t.type === 'INCOME' ? 'green' : 'red' 
+                    color: t.type === 'INCOME' ? 'green' : 'red',
+                    fontSize: '1.1em'
                   }}>
-                    {t.type === 'INCOME' ? '+' : '-'}{parseFloat(t.amount).toFixed(2)} ₺
+                    {t.type === 'INCOME' ? '+' : '-'}
+                    {new Intl.NumberFormat('tr-TR', { 
+                      style: 'currency', 
+                      currency: 'TRY' 
+                    }).format(Number(t.amount))}
                   </span>
+
+                  {/* SİL BUTONU */}
                   <button onClick={() => handleDeleteTransaction(t.id)} style={styles.deleteBtn}>🗑️</button>
                 </div>
               </div>
@@ -213,6 +239,55 @@ export const DashboardPage = () => {
         </div>
 
       </div>
+      <h3 style={{ marginTop: '30px' }}>📂 Kategorilerim</h3>
+
+      {loading ? <p>Yükleniyor...</p> : (
+        <ul style={{ listStyle: 'none', padding: 0 }}>
+          {categories.length === 0 && <p style={{ color: '#888' }}>Henüz kategori yok.</p>}
+          
+          {categories.map((cat) => (
+            <li key={cat.id} style={{ 
+              display: 'flex', 
+              justifyContent: 'space-between', // İsmi sola, butonu sağa yaslar
+              alignItems: 'center',
+              padding: '10px',
+              borderBottom: '1px solid #eee',
+              background: cat.type === 'INCOME' ? '#e8f5e9' : '#ffebee',
+              borderRadius: '5px',
+              marginBottom: '5px'
+            }}>
+              
+              {/* SOL TARAFA: Kategori İsmi */}
+              <div>
+                <strong>{cat.name}</strong>
+                <span style={{ fontSize: '0.8em', color: '#666', marginLeft: '10px' }}>
+                  ({cat.type === 'INCOME' ? 'Gelir' : 'Gider'})
+                </span>
+              </div>
+
+              {/* SAĞ TARAFA: SİL BUTONU (İşte eksik olan parça bu!) 👇 */}
+              <button 
+                onClick={() => handleDeleteCategory(cat.id)}
+                style={{ 
+                  background: 'transparent', 
+                  border: '1px solid #ff4444', 
+                  color: '#ff4444',
+                  cursor: 'pointer', 
+                  padding: '5px 10px', 
+                  borderRadius: '4px',
+                  fontWeight: 'bold'
+                }}
+                // Hover efekti için basit bir mantık (opsiyonel)
+                onMouseOver={(e) => e.currentTarget.style.background = '#ffebee'}
+                onMouseOut={(e) => e.currentTarget.style.background = 'transparent'}
+              >
+                Sil 🗑️
+              </button>
+
+            </li>
+          ))}
+        </ul>
+      )}
     </div>
   );
 };
