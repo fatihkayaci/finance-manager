@@ -1,7 +1,7 @@
 // services/api.ts
 
 // Backend URL'ini .env'den al
-const API_BASE_URL = 'https://cash-app-backend-wg7y.onrender.com/api';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api';
 // ============================================
 // HELPER FUNCTION - HTTP İSTEĞİ YAPAN FONKSİYON
 // ============================================
